@@ -1,0 +1,1791 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Should I Go Outside?</title>
+  <style>
+    :root{
+      --radius: 22px;
+      --radius2: 16px;
+      --shadow: 0 12px 32px rgba(0,0,0,.10);
+
+      --yes: #19c37d;
+      --no: #ff4d4d;
+      --maybe: #ffb020;
+
+      --blue: rgba(78,134,255,.85);
+      --mint: rgba(25,195,125,.85);
+      --sun: rgba(255,176,32,.85);
+
+      --bg: #f6f7fb;
+      --text: #101114;
+      --muted: rgba(16,17,20,.62);
+      --card: rgba(255,255,255,.86);
+      --card2: rgba(255,255,255,.75);
+      --stroke: rgba(20,20,20,.10);
+      --chip: rgba(16,17,20,.07);
+      --chipText: rgba(16,17,20,.78);
+
+      --accentGlow: rgba(78,134,255,.14);
+      --okGlow: rgba(25,195,125,.18);
+
+      --tabBg: rgba(255,255,255,.60);
+    }
+
+    body[data-theme="dark"]{
+      --bg: #0b1020;
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.62);
+      --card: rgba(18,24,44,.66);
+      --card2: rgba(18,24,44,.52);
+      --stroke: rgba(255,255,255,.10);
+      --chip: rgba(255,255,255,.08);
+      --chipText: rgba(255,255,255,.78);
+      --shadow: 0 18px 40px rgba(0,0,0,.35);
+      --accentGlow: rgba(78,134,255,.22);
+      --okGlow: rgba(25,195,125,.22);
+      --tabBg: rgba(18,24,44,.42);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(25,195,125,.10), transparent 55%),
+        radial-gradient(900px 500px at 85% 20%, rgba(255,176,32,.10), transparent 55%),
+        radial-gradient(900px 700px at 50% 100%, rgba(78,134,255,.10), transparent 60%),
+        var(--bg);
+      min-height:100vh;
+      padding:24px;
+    }
+
+    .wrap{ max-width: 1060px; margin: 0 auto; }
+
+    header{
+      display:flex; gap:16px; align-items:flex-start; justify-content:space-between;
+      flex-wrap:wrap; margin-bottom:14px;
+    }
+
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(145deg, var(--mint), var(--blue));
+      box-shadow: 0 10px 30px rgba(25,195,125,.18);
+      position:relative; overflow:hidden;
+    }
+    .logo:before{
+      content:""; position:absolute; inset:-30%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 50%);
+      transform: rotate(25deg);
+    }
+    .brand h1{ margin:0; font-size: 18px; letter-spacing:.2px; }
+    .brand p{ margin:2px 0 0; font-size: 13px; color: var(--muted); }
+
+    .topRight{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap:12px;
+        flex:1;
+        min-width: 360px;
+        max-width: 680px;
+        align-items:stretch;
+        }
+
+    /* Search bar panel that sits above the main YES/NO/MAYBE card */
+    /* --- Pill search bar (like your screenshot) --- */
+    .searchBarPanel{
+    margin: 0 0 16px;
+    }
+
+    .searchPill{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 18px 22px;
+    border-radius: 999px;
+
+    background: rgba(18, 24, 44, .55);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 14px 34px rgba(0,0,0,.25);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    }
+
+    body[data-theme="light"] .searchPill{
+    background: rgba(255,255,255,.55);
+    border: 1px solid rgba(20,20,20,.10);
+    box-shadow: 0 14px 34px rgba(0,0,0,.10);
+    }
+
+    .searchIcon{
+    font-size: 22px;
+    opacity: .9;
+    }
+
+    .searchPill input{
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    }
+
+    .searchPill input::placeholder{
+    color: rgba(255,255,255,.70);
+    }
+
+    body[data-theme="light"] .searchPill input::placeholder{
+    color: rgba(16,17,20,.55);
+    }
+
+    /* small location icon button inside pill */
+    .pillBtn{
+    border: 0;
+    outline: 0;
+    background: rgba(255,255,255,.10);
+    color: var(--text);
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    }
+
+    body[data-theme="light"] .pillBtn{
+    background: rgba(16,17,20,.08);
+    }
+
+    .pillBtn:hover{ opacity: .92; }
+
+    /* tiny helper text under pill */
+    .searchHint{
+    margin-top: 8px;
+    padding-left: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    }
+
+
+    .btn{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.9);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, opacity .2s ease;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    body[data-theme="dark"] .btn{
+      background: rgba(18,24,44,.88);
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+    }
+    .btn:hover{ opacity:.95 }
+    .btn:active{ transform: translateY(1px) }
+    .btn.on{
+      border-color: rgba(78,134,255,.45);
+      box-shadow: 0 14px 30px var(--accentGlow);
+    }
+    .btn.primary{
+      border-color: rgba(25,195,125,.35);
+      box-shadow: 0 14px 30px var(--okGlow);
+    }
+    .btn.coffee{
+      background: #ffdd00;
+      color:#000;
+      font-weight:900;
+      border-color: rgba(0,0,0,.10);
+    }
+    body[data-theme="dark"] .btn.coffee{
+      background: #ffdd00;
+      color:#000;
+      border-color: rgba(0,0,0,.12);
+    }
+
+    .toggles{
+        display:flex;
+        gap:10px;
+        align-items:center;
+        justify-content:flex-start;
+        flex: 0 0 auto;
+        flex-wrap:wrap;
+        }
+
+    .toggles .coffee{
+        margin-left: auto;
+        }
+
+    .tabs{
+        width:100%;
+        display:flex;
+        gap:10px;
+        align-items:center;
+        justify-content:flex-start;
+        }
+
+    .controlsRow{
+        width:100%;
+        display:flex;
+        gap:12px;
+        align-items:center;
+        justify-content:flex-start;
+        flex-wrap:wrap; /* allows wrap nicely on small screens */
+        }
+
+    .tab{
+      border:0;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 900;
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .tab.active{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      color: var(--text);
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    }
+
+    main{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:16px;
+    }
+    @media (max-width: 900px){ main{ grid-template-columns: 1fr; } }
+
+    .panel{
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:18px;
+    }
+
+    .hero{ display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .bigAnswer{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+
+    .badge{
+      font-size: 56px; font-weight: 900; letter-spacing: -2px; line-height: 1; margin:0;
+    }
+    .badge.yes{ color: var(--yes) }
+    .badge.no{ color: var(--no) }
+    .badge.maybe{ color: var(--maybe) }
+
+    .question{ font-weight: 800; font-size: 16px; margin:0 0 4px; }
+    .quip{ margin:0; color: var(--muted); font-size: 14px; max-width: 560px; }
+
+    .metaRow{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
+    .chip{
+      padding:8px 10px; border-radius: 999px;
+      background: var(--chip);
+      color: var(--chipText);
+      font-size: 12px;
+      border:1px solid rgba(255,255,255,.0);
+    }
+    body[data-theme="dark"] .chip{ border-color: rgba(255,255,255,.06); }
+
+    .forecastTitle{
+      margin: 16px 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .days{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 900px){ .days{ grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 540px){ .days{ grid-template-columns: repeat(3, 1fr); } }
+
+    .dayCard{
+      background: var(--card2);
+      border:1px solid var(--stroke);
+      border-radius: 16px;
+      padding:10px;
+      cursor:pointer;
+      transition: transform .08s ease, border-color .2s ease, background .2s ease;
+      user-select:none;
+    }
+    .dayCard:hover{ transform: translateY(-1px); background: rgba(255,255,255,.92); }
+    body[data-theme="dark"] .dayCard:hover{ background: rgba(18,24,44,.72); }
+
+    .dayCard.active{
+      border-color: rgba(78,134,255,.45);
+      box-shadow: 0 12px 26px var(--accentGlow);
+      background: rgba(255,255,255,.95);
+    }
+    body[data-theme="dark"] .dayCard.active{ background: rgba(18,24,44,.78); }
+
+    .dayTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .dow{ font-weight: 900; font-size: 12px; }
+    .emoji{ font-size: 18px; }
+
+    .mini{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:8px; color: var(--muted); font-size: 12px;
+    }
+    .mini strong{ color: var(--text) }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .metric{
+      background: var(--card2);
+      border:1px solid var(--stroke);
+      border-radius: 18px;
+      padding:12px 12px;
+    }
+    .metric .label{
+      font-size: 12px; color: var(--muted);
+      font-weight: 800; letter-spacing:.06em;
+      text-transform: uppercase;
+      display:flex; gap:8px; align-items:center;
+    }
+    .metric .value{
+      margin-top:6px;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing:-.2px;
+      line-height: 1.25;
+    }
+    .wide{ grid-column: 1 / -1; }
+
+    .smallNote{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(25,195,125,.12);
+      border:1px solid rgba(25,195,125,.20);
+      color: rgba(10,50,35,.90);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    body[data-theme="dark"] .smallNote{
+      color: rgba(215,255,238,.90);
+      background: rgba(25,195,125,.16);
+      border-color: rgba(25,195,125,.22);
+    }
+
+    .asideTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; margin-bottom: 10px;
+    }
+    .asideTitle h2{ margin:0; font-size: 14px; letter-spacing:.2px; }
+    .asideTitle span{ font-size: 12px; color: var(--muted); font-weight: 800; }
+
+    .list{ display:flex; flex-direction:column; gap:10px; }
+    .tip{
+      background: var(--card2);
+      border:1px solid var(--stroke);
+      border-radius: 18px;
+      padding: 12px;
+    }
+    .tip b{ display:block; margin-bottom: 6px; }
+    .tip p{ margin:0; color: var(--muted); font-size: 13px; line-height: 1.4; }
+
+    .tip .small{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footerBar{
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    .hidden{ display:none !important; }
+
+    /* About page layout */
+    .aboutWrap{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    }
+    .aboutTitle{
+      font-size: 34px;
+      margin: 0 0 8px;
+      letter-spacing: -1px;
+      font-weight: 950;
+    }
+    .aboutText{
+      margin:0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+      max-width: 820px;
+    }
+    .aboutSectionTitle{
+      margin: 18px 0 8px;
+      font-weight: 950;
+      letter-spacing: .08em;
+      color: var(--text);
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .scienceList{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text);
+    }
+    .scienceList li{
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+    .scienceList li span{
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .twoCards{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 760px){
+      .twoCards{ grid-template-columns: 1fr; }
+    }
+
+    .ctaRow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+
+    a.link{
+      color: inherit;
+    }
+  </style>
+</head>
+
+<body data-theme="light">
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Should I Go Outside?</h1>
+          <p>Weather-powered decisions, delivered with maximum sass.</p>
+        </div>
+      </div>
+
+      <div class="topRight">
+        <div class="tabs" role="tablist" aria-label="Pages">
+            <button class="tab active" id="tabDashboard" role="tab" aria-selected="true">🌤️ Dashboard</button>
+            <button class="tab" id="tabAbout" role="tab" aria-selected="false">ℹ️ About</button>
+            </div>
+
+            <div class="controlsRow">
+
+            <div class="toggles" id="toggleRow">
+                <button class="btn" id="sassBtn" title="Make the app extra unhinged">✨ Extra Sass: Off</button>
+                <button class="btn" id="themeBtn" title="Theme: Auto → Light → Dark">🎨 Theme: Auto</button>
+                <a class="btn coffee" href="https://buymeacoffee.com/teraau" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+            </div>
+            </div>
+
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="pageDashboard">
+        <div class="searchBarPanel" id="searchRow">
+            <div class="searchPill" title="Search a location">
+                <span class="searchIcon" aria-hidden="true">🔎</span>
+
+                <input
+                id="placeInput"
+                placeholder="Search suburb/city (e.g., Sunbury, Victoria)"
+                autocomplete="off"
+                />
+
+                <button class="pillBtn" id="useMeBtn" type="button" title="Use my location">📍</button>
+            </div>
+
+            <div class="searchHint">Press Enter to search</div>
+        </div>
+
+
+      <main>
+        <section class="panel" id="mainPanel">
+          <div class="hero">
+            <div class="bigAnswer">
+              <h2 class="badge maybe" id="answerText">MAYBE</h2>
+              <div>
+                <p class="question">Should I go outside?</p>
+                <p class="quip" id="quipText">Loading the sky’s mood...</p>
+              </div>
+            </div>
+
+            <div class="metaRow">
+              <div class="chip" id="locationChip">📍 Finding you…</div>
+              <div class="chip" id="timeChip">⏱️ —</div>
+            </div>
+          </div>
+
+          <div class="forecastTitle">
+            <div>7-day outlook (click a day)</div>
+            <div class="chip" id="selectedChip">Selected: Today</div>
+          </div>
+
+          <div class="days" id="daysRow"></div>
+
+          <div class="grid2">
+            <div class="metric">
+              <div class="label">💧 Humidity</div>
+              <div class="value" id="humidityVal">—</div>
+            </div>
+            <div class="metric">
+              <div class="label">💨 Wind</div>
+              <div class="value" id="windVal">—</div>
+            </div>
+
+            <div class="metric">
+              <div class="label">☔ Rain chance</div>
+              <div class="value" id="rainVal">—</div>
+            </div>
+            <div class="metric">
+              <div class="label">🌡️ Temp</div>
+              <div class="value" id="tempVal">—</div>
+            </div>
+
+            <div class="metric wide">
+              <div class="label">🕶️ UV status</div>
+              <div class="value" id="uvVal">—</div>
+            </div>
+
+            <div class="metric wide">
+              <div class="label">⏰ Best time to go outside</div>
+              <div class="value" id="bestTimeVal">—</div>
+            </div>
+
+            <div class="smallNote wide" id="moneyNote">
+              🌿 Choosing outside might save ~$1.50 and 2kg CO₂ (scientific vibes, not science).
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="asideTitle">
+            <h2>Outside survival guide</h2>
+            <span id="extraSummary">—</span>
+          </div>
+
+          <div class="list">
+            <div class="tip">
+              <b>🧢 What to wear (Male)</b>
+              <p id="maleOutfitText">—</p>
+            </div>
+
+            <div class="tip">
+              <b>👗 What to wear (Female)</b>
+              <p id="femaleOutfitText">—</p>
+            </div>
+
+            <div class="tip">
+              <b>🧠 Survival tip</b>
+              <p id="survivalTipText">—</p>
+            </div>
+
+            <div class="tip">
+              <b>🏃 Ideas (Outside)</b>
+              <div id="outsideIdeasText" class="small">—</div>
+            </div>
+
+            <div class="tip">
+              <b>🛋️ Ideas (Inside)</b>
+              <div id="insideIdeasText" class="small">—</div>
+            </div>
+
+            <div class="tip">
+              <b>💬 Sassy motivation</b>
+              <p id="motivationText">—</p>
+            </div>
+
+            <div class="tip">
+              <b>📡 Data source</b>
+              <p>Weather data by Open-Meteo (forecast + geocoding). No API key needed.</p>
+              <p class="small">Disclaimer: for fun, not safety-critical planning. Check official sources for severe weather.</p>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <div class="footerBar">
+        Built for fun. Don’t fight lightning with confidence.
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="pageAbout" class="hidden">
+      <div class="panel aboutWrap">
+        <h2 class="aboutTitle">Why “Should I Go Outside?”</h2>
+        <p class="aboutText">
+          I made this because “is it a good day to go out?” is a daily question — and the weather apps often give
+          you *data*, not a *decision*. This site tries to translate forecast chaos into a simple YES/NO/MAYBE,
+          plus some practical tips and a little sass to keep it interesting.
+        </p>
+
+        <div class="aboutSectionTitle">How it decides</div>
+        <p class="aboutText">
+          The score weighs multiple factors: rain probability, wind, temperature comfort, and UV. Then it picks the best
+          “go outside” window by scanning hourly conditions and choosing the strongest 2-hour period.
+          It’s a vibe-based helper, not an oracle.
+        </p>
+
+        <div class="aboutSectionTitle">The “science-ish” bits</div>
+        <ol class="scienceList">
+          <li><b>Moisture & rain risk</b>: <span>If precipitation probability is high, your plans may become “indoor plans.”</span></li>
+          <li><b>Wind</b>: <span>Strong wind makes “pleasant” feel like “aggressively unpleasant.” Also: hats die.</span></li>
+          <li><b>UV</b>: <span>High UV can turn a nice day into a “wear sunscreen or perish” situation.</span></li>
+          <li><b>Comfort</b>: <span>Extreme temps lower the score, because sweating or freezing is not leisure.</span></li>
+        </ol>
+
+        <div class="twoCards">
+          <div class="tip">
+            <b>📡 Data source</b>
+            <p>
+              Weather data is provided by Open-Meteo (forecast + geocoding).
+              This website is not affiliated with Open-Meteo.
+            </p>
+          </div>
+          <div class="tip">
+            <b>🔒 Privacy</b>
+            <p>
+              Your location is used only to fetch weather in your browser. This site does not run invasive ads and does not sell data.
+              If you use “Use my location”, your browser may request permission.
+            </p>
+          </div>
+        </div>
+
+        <div class="aboutSectionTitle">Support & contact</div>
+        <p class="aboutText">
+          If you found this useful/funny, you can fuel future updates (and future sass).
+        </p>
+        <div class="ctaRow">
+          <a class="btn coffee" href="https://buymeacoffee.com/teraau" target="_blank" rel="noopener">☕ Support the maker</a>
+          <a class="btn primary" href="#" onclick="alert('Tip: add your LinkedIn/email links in the HTML where these buttons are.'); return false;">💬 Talk to me (add link)</a>
+          <a class="btn" href="#" onclick="alert('Tip: add your email link (mailto:) in the HTML where this button is.'); return false;">✉️ Email me (add link)</a>
+        </div>
+
+        <div class="aboutSectionTitle">Legal-ish disclaimer</div>
+        <p class="aboutText">
+          This tool is for entertainment and general guidance only. Forecasts can be wrong. Don’t rely on this for safety-critical decisions.
+          Always check local warnings for severe weather and emergencies.
+        </p>
+      </div>
+
+      <div class="footerBar">
+        © <span id="yearNow"></span> — Made by you. Weather data by Open-Meteo. Keep it fun.
+      </div>
+    </section>
+  </div>
+
+<script>
+  // ---------------------------
+  // Open-Meteo endpoints (no API key)
+  // ---------------------------
+  const GEO_URL = "https://geocoding-api.open-meteo.com/v1/search";
+  const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
+
+  // UI
+  const tabDashboard = document.getElementById("tabDashboard");
+  const tabAbout = document.getElementById("tabAbout");
+  const pageDashboard = document.getElementById("pageDashboard");
+  const pageAbout = document.getElementById("pageAbout");
+
+  const placeInput = document.getElementById("placeInput");
+  const useMeBtn = document.getElementById("useMeBtn");
+  const sassBtn = document.getElementById("sassBtn");
+  const themeBtn = document.getElementById("themeBtn");
+
+  const answerText = document.getElementById("answerText");
+  const quipText = document.getElementById("quipText");
+  const locationChip = document.getElementById("locationChip");
+  const timeChip = document.getElementById("timeChip");
+  const selectedChip = document.getElementById("selectedChip");
+  const daysRow = document.getElementById("daysRow");
+
+  const humidityVal = document.getElementById("humidityVal");
+  const windVal = document.getElementById("windVal");
+  const rainVal = document.getElementById("rainVal");
+  const tempVal = document.getElementById("tempVal");
+  const uvVal = document.getElementById("uvVal");
+  const bestTimeVal = document.getElementById("bestTimeVal");
+  const moneyNote = document.getElementById("moneyNote");
+
+  const extraSummary = document.getElementById("extraSummary");
+  const maleOutfitText = document.getElementById("maleOutfitText");
+  const femaleOutfitText = document.getElementById("femaleOutfitText");
+  const survivalTipText = document.getElementById("survivalTipText");
+  const outsideIdeasText = document.getElementById("outsideIdeasText");
+  const insideIdeasText = document.getElementById("insideIdeasText");
+  const motivationText = document.getElementById("motivationText");
+
+  document.getElementById("yearNow").textContent = new Date().getFullYear();
+
+  // ---------------------------
+  // State
+  // ---------------------------
+  let state = {
+    name: "—",
+    country: "",
+    lat: null,
+    lon: null,
+    forecast: null,          // { raw, daily, hourly, bestWindowsByDate, uniqueQuipsByDate }
+    selectedIndex: 0,
+    extraSass: false,
+    themeMode: "auto",       // auto | light | dark
+    isNight: false
+  };
+
+  // ---------------------------
+  // Helpers
+  // ---------------------------
+  const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  function dailySeed(dateStr){
+    let h = 0;
+    for (let i = 0; i < dateStr.length; i++){
+      h = (h << 5) - h + dateStr.charCodeAt(i);
+      h |= 0;
+    }
+    return Math.abs(h);
+  }
+
+  function pickByDay(arr, dateStr){
+    const seed = dailySeed(dateStr);
+    return arr[seed % arr.length];
+  }
+
+  function fmtDay(dateStr){
+    const d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString(undefined, { weekday: "short" });
+  }
+
+  function fmtShort(dateStr){
+    const d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+
+  function uvLabel(uv){
+    if (uv == null) return "—";
+    if (uv >= 11) return "EXTREME";
+    if (uv >= 8) return "VERY HIGH";
+    if (uv >= 6) return "HIGH";
+    if (uv >= 3) return "MODERATE";
+    return "LOW";
+  }
+
+  function computeNightFlag(){
+    const h = new Date().getHours();
+    state.isNight = (h < 6 || h >= 19);
+  }
+
+  // Emoji = dominant daytime event (daily aggregates)
+  function dominantWeatherEmoji(day){
+    const rain = day.precipProb ?? 0;
+    const wind = day.windMax ?? 0;
+    const uv = day.uvMax ?? 0;
+    const tmax = day.tmax ?? 20;
+    const tmin = day.tmin ?? 10;
+
+    if (rain >= 70) return "🌧️";
+    if (rain >= 35) return "🌦️";
+    if (wind >= 40) return "🌬️";
+    if (tmax >= 35) return "🔥";
+    if (tmin <= 1) return "🥶";
+    if (uv >= 9) return "🫠";
+    return "☀️";
+  }
+
+  function scenarioKey(day){
+    const rain = day.precipProb ?? 0;
+    const wind = day.windMax ?? 0;
+    const uv = day.uvMax ?? 0;
+    const tmax = day.tmax ?? 20;
+    const tmin = day.tmin ?? 10;
+
+    if (rain >= 65) return "rain";
+    if (wind >= 38) return "wind";
+    if (tmax >= 35) return "hot";
+    if (tmax <= 12 || tmin <= 2) return "cold";
+    if (uv >= 9) return "uv";
+    if (rain <= 15 && wind <= 20 && tmax >= 18 && tmax <= 30) return "perfect";
+    return "meh";
+  }
+
+  // ---------------------------
+  // Unique quips per day (so days don’t reuse the same ones)
+  // ---------------------------
+  const QUIPS = {
+    normal: {
+      rain: [
+        "Rain is doing a surprise performance. Tickets are wet.",
+        "Outside is currently in ‘shower mode’.",
+        "Umbrella time. Or embrace your new life as a damp legend.",
+        "It’s raining. Your socks are already filing complaints.",
+        "If you go out, you’ll return as a human sponge.",
+        "Sky’s crying. You don’t have to."
+      ],
+      wind: [
+        "It’s windy. Your hair will file a formal complaint.",
+        "Great day to practise walking at a 45° angle.",
+        "Wind’s up. Nature chose chaos.",
+        "Hold your hat AND your dignity.",
+        "If you hear a bin roll past, that’s just wind theatre.",
+        "Outside is basically an air blender."
+      ],
+      uv: [
+        "UV is spicy. Wear sunscreen unless you enjoy being a tomato.",
+        "The sun is in full ‘laser mode’.",
+        "SPF is your best friend today.",
+        "UV is high. Put on sunscreen like it’s armour.",
+        "The sun is disrespectful today. Respond with SPF.",
+        "Sunglasses recommended: yes."
+      ],
+      hot: [
+        "It’s hot. Outside is basically a preheated oven.",
+        "Hydrate, or become a crispy memory.",
+        "If you go out, bring water and emotional support.",
+        "It’s giving ‘air fryer’. You are the snack.",
+        "Sun’s cooking today. Don’t volunteer as tribute.",
+        "Heat mode: activated."
+      ],
+      cold: [
+        "It’s cold. Outside is a freezer with opinions.",
+        "Wear layers. All of them.",
+        "Go out if you like your nose feeling betrayed.",
+        "Cold today. Your hands will regret being hands.",
+        "Outside is a fridge and you’re the leftovers.",
+        "Hot drink energy day."
+      ],
+      perfect: [
+        "Elite outside conditions. Touch grass responsibly.",
+        "Go out. Your future self will post about it.",
+        "It’s a rare ‘yes’ from the sky. Don’t waste it.",
+        "Outside is actually… nice? Suspicious.",
+        "Today’s weather is carrying you.",
+        "Fresh air DLC unlocked."
+      ],
+      meh: [
+        "Proceed with mild confidence.",
+        "Outside is fine. Not amazing. Like a microwave burrito.",
+        "It’s a ‘maybe’ day. Choose chaos.",
+        "Weather’s being indecisive. Same.",
+        "You can go out, but keep expectations humble.",
+        "It’s not bad… it’s just not committed."
+      ]
+    },
+    extra: {
+      rain: [
+        "Go outside if you want a free rinse cycle and a questionable mood.",
+        "Rainy. You’ll return as a human sponge with regrets.",
+        "Outside is wet. Your socks are already screaming.",
+        "If you go out, you’re basically consenting to soup weather.",
+        "This is ‘shower but public’ energy.",
+        "Umbrella duel with the sky. You lose either way."
+      ],
+      wind: [
+        "Wind level: ‘your bin gets promoted to street art’.",
+        "If you go out, hold onto your hat and your self-esteem.",
+        "Outside is running a leaf-based assault course.",
+        "Wind is in its villain arc. Do not engage.",
+        "Your hairstyle has a 0% survival rate today.",
+        "It’s giving ‘flying debris’ — but make it fashion."
+      ],
+      uv: [
+        "UV is trying to cook you like a sausage at Bunnings.",
+        "SPF or perish. Choose wisely.",
+        "The sun is disrespectful today. Respond with sunscreen.",
+        "UV is on hard mode. You are not.",
+        "Today’s forecast: bright, bold, and personally insulting.",
+        "Wear sunscreen like you’re sponsored."
+      ],
+      hot: [
+        "It’s hot enough to make your phone overheat emotionally.",
+        "Outside is an air fryer. You are the snack.",
+        "Heat is up. Don’t become a cautionary tale.",
+        "If you step outside, you’ll instantly become ‘medium rare’.",
+        "Hydrate like it’s your job.",
+        "Sun’s angry. Don’t argue back."
+      ],
+      cold: [
+        "Cold. Your bones will make dial-up noises.",
+        "Outside is a fridge and you’re the leftovers.",
+        "If you go out, the wind will personally insult you.",
+        "You will not feel your face. That’s the feature.",
+        "It’s cold enough to humble your confidence.",
+        "Layer up or suffer."
+      ],
+      perfect: [
+        "It’s gorgeous. Go outside and pretend you’re better than everyone.",
+        "Touch grass. Reconnect with your firmware update (nature).",
+        "Outside is flirting. Say yes.",
+        "Sunshine’s being nice — suspicious but acceptable.",
+        "Go out and act like life is a montage.",
+        "This is prime ‘strut’ weather."
+      ],
+      meh: [
+        "It’s giving ‘fine’. Like a first-date that ends in ‘we’ll see’.",
+        "You can go out… but bring your expectations down to earth.",
+        "Neutral weather. Maximum opportunity to overthink.",
+        "Weather’s mid. Your attitude doesn’t have to be.",
+        "It’s not great, not terrible — just emotionally unavailable.",
+        "Proceed with cautious optimism and snacks."
+      ]
+    }
+  };
+
+  function buildUniqueQuipsForWeek(dailyArr){
+    const dates = dailyArr.map(d => d.date);
+    const used = new Map(); // key -> Set(quip)
+    const out = new Map();  // date -> quip
+
+    function pickUnique(key, date){
+      if (!used.has(key)) used.set(key, new Set());
+      const usedSet = used.get(key);
+
+      const pool = (state.extraSass ? QUIPS.extra[key] : QUIPS.normal[key]) || [];
+      if (!pool.length) return "Weather is happening. React accordingly.";
+
+      // Try a few deterministic indices, then fallback
+      const seed = dailySeed(date + "|" + key);
+      const step = 3; // prime-ish
+      for (let attempt = 0; attempt < pool.length; attempt++){
+        const idx = (seed + attempt * step) % pool.length;
+        const candidate = pool[idx];
+        if (!usedSet.has(candidate)){
+          usedSet.add(candidate);
+          return candidate;
+        }
+      }
+      // Pool exhausted; allow reuse (very unlikely with these pool sizes)
+      return pool[seed % pool.length];
+    }
+
+    for (const d of dailyArr){
+      const key = scenarioKey(d);
+      out.set(d.date, pickUnique(key, d.date));
+    }
+    return out;
+  }
+
+  // ---------------------------
+  // Decision engine
+  // ---------------------------
+  function decisionEngine(day){
+  const precip = day.precipProb ?? 0; // %
+  const wind   = day.windMax ?? 0;    // km/h (Open-Meteo daily max wind speed)
+  const uv     = day.uvMax ?? 0;      // UV index
+  const tmax   = day.tmax ?? 20;      // °C
+  const tmin   = day.tmin ?? 10;      // °C
+
+  // ---------------------------
+  // 1) Classify each factor (good / meh / bad)
+  // Tune these thresholds to your taste.
+  // ---------------------------
+
+  // Rain
+  const rainBad = precip >= 70;
+  const rainMeh = precip >= 25 && precip < 70; // "slightly poor" range
+  
+
+  // Wind
+  const windBad = wind >= 40;
+  const windMeh = wind >= 25 && wind < 40;
+
+  // Temperature comfort (use max mostly, but protect against icy mornings)
+  const tempBad = (tmax >= 35) || (tmax <= 12) || (tmin <= 2);
+  const tempMeh = (!tempBad) && (tmax >= 31 || tmax <= 16 || tmin <= 6);
+
+  // UV only matters if it's not night
+  const uvBad = (!state.isNight) && uv >= 11;               // extreme
+  const uvMeh = (!state.isNight) && uv >= 8 && uv < 11;     // very high/high
+
+  // ---------------------------
+  // 2) Rule-based decision (predictable)
+  // ---------------------------
+  const badCount =
+    (rainBad ? 1 : 0) +
+    (windBad ? 1 : 0) +
+    (tempBad ? 1 : 0) +
+    (uvBad ? 1 : 0);
+
+  const mehCount =
+    (rainMeh ? 1 : 0) +
+    (windMeh ? 1 : 0) +
+    (tempMeh ? 1 : 0) +
+    (uvMeh ? 1 : 0);
+
+  // NO: any true "bad" factor, or multiple meh factors stacking up
+  // (keeps it from saying YES on a day that's mediocre in 3 different ways)
+  let decision = "MAYBE";
+  if (badCount >= 1) decision = "NO";
+  else if (mehCount >= 3) decision = "NO";
+  else if (mehCount <= 1) decision = "YES";  // really good, or only one small issue
+  else decision = "MAYBE";                    // exactly 2 meh factors => "one or two slightly poor"
+  if (decision === "YES" && precip > 25) decision = "MAYBE"; // HARD RULE: if rain is above 25%, it can never be YES
+
+
+  // ---------------------------
+  // 3) Score (for your "Score: x/100" chip)
+  // Not the primary decision-maker anymore — just a nice indicator.
+  // ---------------------------
+  let score = 100;
+
+  // Rain scoring
+  if (precip >= 70) score -= 50;
+  else if (precip >= 35) score -= 25;
+  else score -= precip * 0.2; // tiny penalty
+
+  // Wind scoring
+  if (wind >= 40) score -= 35;
+  else if (wind >= 25) score -= 18;
+  else if (wind > 15) score -= (wind - 15) * 0.6;
+
+  // Temp scoring (simple comfort penalties)
+  if (tmax >= 35) score -= 35;
+  else if (tmax >= 31) score -= 15;
+  if (tmax <= 12) score -= 28;
+  else if (tmax <= 16) score -= 10;
+  if (tmin <= 2) score -= 12;
+  else if (tmin <= 6) score -= 6;
+
+  // UV scoring (daytime)
+  if (!state.isNight){
+    if (uv >= 11) score -= 30;
+    else if (uv >= 8) score -= 15;
+    else if (uv >= 6) score -= 6;
+  }
+
+  score = clamp(score, 0, 100);
+
+  return { decision, score };
+}
+
+
+  // ---------------------------
+  // Best time to go outside (ANY of the 7 days)
+  // ---------------------------
+  function bestWindowForDate(dateStr, hourly){
+    if (!hourly || !hourly.time || !hourly.time.length) return "—";
+
+    const times = hourly.time;
+    const temp = hourly.temperature_2m;
+    const rainP = hourly.precipitation_probability;
+    const wind = hourly.wind_speed_10m;
+    const uv = hourly.uv_index;
+
+    let best = null;
+
+    for (let i = 0; i < times.length - 1; i++){
+      if (!times[i].startsWith(dateStr)) continue;
+
+      const d0 = new Date(times[i]);
+      const h = d0.getHours();
+      // Scan daytime-ish windows
+      if (h < 6 || h > 20) continue;
+
+      const avgTemp = (temp[i] + temp[i+1]) / 2;
+      const avgRain = (rainP[i] + rainP[i+1]) / 2;
+      const avgWind = (wind[i] + wind[i+1]) / 2;
+      const avgUv = (uv[i] + uv[i+1]) / 2;
+
+      let s = 100;
+      s -= avgRain * 1.1;
+      if (avgWind > 12) s -= (avgWind - 12) * 3.0;
+      if (avgUv > 8) s -= (avgUv - 8) * 10.0;
+
+      // temp comfort
+      if (avgTemp < 16) s -= (16 - avgTemp) * 4.0;
+      if (avgTemp > 30) s -= (avgTemp - 30) * 6.0;
+
+      if (!best || s > best.score){
+        best = { score: s, start: d0, end: new Date(times[i+1]) };
+      }
+    }
+
+    if (!best) return "—";
+    const fmt = (d) => d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    return `${fmt(best.start)} – ${fmt(best.end)}`;
+  }
+
+  function computeBestWindowsForWeek(dailyArr, hourly){
+    const map = new Map();
+    for (const d of dailyArr){
+      map.set(d.date, bestWindowForDate(d.date, hourly));
+    }
+    return map;
+  }
+
+  // ---------------------------
+  // Clothing recommendations (Male / Female) — COMPLETE
+  // ---------------------------
+  function clothingByGender(day){
+    const rain = day.precipProb ?? 0;
+    const tmax = day.tmax ?? 20;
+    const tmin = day.tmin ?? 10;
+    const uv = day.uvMax ?? 0;
+    const wind = day.windMax ?? 0;
+
+    const male = new Set();
+    const female = new Set();
+
+
+    // Base outfits
+    if (tmax <= 14){
+      male.add("hoodie", "jeans", "closed shoes");
+      female.add("jumper", "leggings or jeans", "closed shoes");
+    } else if (tmax >= 25){
+      male.add("t-shirt", "shorts", "breathable shoes");
+      female.add("light top", "shorts or dress", "sandals / breathable shoes");
+    } else {
+      male.add("t-shirt", "jeans or chinos");
+      female.add("top", "jeans / skirt");
+    }
+
+    // Add-ons
+    if (tmin <= 6 && tmax > 14){
+      male.add("light jacket (morning/evening)");
+      female.add("light jacket (morning/evening)");
+    }
+    if (rain >= 35){
+      male.add("umbrella");
+      female.add("umbrella");
+    }
+    if (wind >= 30){
+      male.add("windbreaker");
+      female.add("light jacket");
+    }
+    if (uv >= 6 && !state.isNight){
+      male.add("sunscreen");
+      male.add("hat");
+      female.add("sunscreen");
+      female.add("hat");
+    }
+
+    // Footwear tweaks
+    if (rain >= 35){
+      male.add("closed shoes (avoid soggy socks)");
+      female.add("closed shoes (avoid soggy socks)");
+    } else if (tmax >= 30){
+      male.add("breathable shoes");
+      female.add("sandals / breathable shoes");
+    }
+
+    return {
+        male: Array.from(male).join(", "),
+        female: Array.from(female).join(", "),
+        };
+
+  }
+
+  // ---------------------------
+  // Fun survival guide + activities + motivation
+  // ---------------------------
+  function funSurvivalTip(day){
+    const rain = day.precipProb ?? 0;
+    const wind = day.windMax ?? 0;
+    const uv = day.uvMax ?? 0;
+    const tmax = day.tmax ?? 20;
+
+    const tips = [];
+
+    if (rain >= 50) tips.push("If you go out, accept you’re basically a wet podcast host.");
+    if (wind >= 35) tips.push("Secure loose objects. The wind is in its villain arc.");
+    if (uv >= 9 && !state.isNight) tips.push("SPF is not optional — the sun is disrespectful today.");
+    if (tmax >= 33) tips.push("Carry water like it’s a personality trait.");
+
+    if (!tips.length){
+      tips.push(pickByDay([
+        "Touch grass responsibly. Do not start a new life in the park.",
+        "Smile at the sun. Or squint at it aggressively. Both count.",
+        "Take a walk and pretend you’re in a movie montage.",
+        "Go outside for five minutes. If it’s awful, you’re allowed to flee."
+      ], day.date));
+    }
+    return pickByDay(tips, day.date);
+  }
+
+  function activityIdeas(day, decision){
+    const rain = day.precipProb ?? 0;
+    const wind = day.windMax ?? 0;
+    const uv = day.uvMax ?? 0;
+    const tmax = day.tmax ?? 20;
+
+    const outsideNice = [
+      "Go for a walk and pretend you're in a motivational ad",
+      "Coffee run + people-watch like a professional",
+      "Park visit + playlist + main-character energy",
+      "Quick errands sprint (speedrun: adulting)",
+      "Bike ride / gentle jog (become a legend, briefly)"
+    ];
+
+    const outsideMeh = [
+      "Short walk (10–15 mins) then retreat like a tactical genius",
+      "Sit outside under cover and feel superior to indoor people",
+      "Go out for one task only (in-and-out operation)",
+      "Do a sunset stroll (if the sky behaves)"
+    ];
+
+    const outsideBad = [
+      "Stand outside for 30 seconds, say ‘nope’, go back inside",
+      "Only go outside if required by law or snack needs",
+      "Umbrella duel with the wind (you will lose)",
+      "Take the bins out and call it cardio"
+    ];
+
+    const insideNice = [
+      "Tidy one small area and take credit for the whole house",
+      "Stretch / light workout and feel instantly productive",
+      "Plan something fun for later (future-you will clap)",
+      "Cook something simple and pretend it’s a lifestyle"
+    ];
+
+    const insideBad = [
+      "Movie + blanket + no guilt (weather-approved)",
+      "Make something warm and call it self-care (it is)",
+      "Read / game / nap — rotate until morale improves",
+      "Do absolutely nothing (elite move)"
+    ];
+
+    let outside = [];
+    let inside = [];
+
+    if (decision === "YES"){
+      outside = outsideNice;
+      inside = insideNice;
+    } else if (decision === "NO"){
+      outside = outsideBad;
+      inside = insideBad;
+    } else {
+      outside = outsideMeh;
+      inside = (rain >= 50 || wind >= 35 || tmax >= 33) ? insideBad : insideNice;
+    }
+
+    // Condition-specific nudges
+    if (uv >= 9 && !state.isNight) outside = outside.map(x => x + " (wear SPF)");
+    if (tmax >= 33) outside = outside.map(x => x + " (bring water)");
+    if (rain >= 50) outside = outside.map(x => x + " (umbrella required)");
+    if (wind >= 35) outside = outside.map(x => x + " (hold your hat)");
+
+    return {
+      outside: outside.slice(0, 3),
+      inside: inside.slice(0, 3),
+    };
+  }
+
+  function dailyMotivation(day){
+    const rain = day.precipProb ?? 0;
+    const tmax = day.tmax ?? 20;
+    const wind = day.windMax ?? 0;
+    const uv = day.uvMax ?? 0;
+
+    const sunny = [
+      "You didn’t come this far to stay inside. Go romanticise your life.",
+      "This weather is carrying you. Don’t waste it.",
+      "Main-character energy unlocked. Use it responsibly-ish.",
+      "Go outside. Collect your free serotonin."
+    ];
+
+    const rainy = [
+      "Soft days still count. Cozy progress is still progress.",
+      "Rest is productive. The rain said so.",
+      "The sky is crying so you don’t have to. Take the win.",
+      "If it’s wet outside, be warm inside. That’s balance."
+    ];
+
+    const hot = [
+      "Hydrate, survive, conquer. In that order.",
+      "Today is spicy. Be smarter than the sun.",
+      "You’re stronger than the heat. Probably.",
+      "Move like a lizard: short bursts, then shade."
+    ];
+
+    const chaotic = [
+      "The weather chose violence. You chose peace.",
+      "Not every day is for winning. Some are for surviving politely.",
+      "If outside is a scam, you’re allowed to unsubscribe.",
+      "You don’t have to prove anything to the wind."
+    ];
+
+    if (rain >= 50) return pickByDay(rainy, day.date);
+    if (tmax >= 33) return pickByDay(hot, day.date);
+    if (wind >= 35 || (uv >= 9 && !state.isNight)) return pickByDay(chaotic, day.date);
+    return pickByDay(sunny, day.date);
+  }
+
+  function renderGuideExtras(day, decision){
+    const clothes = clothingByGender(day);
+    maleOutfitText.textContent = clothes.male;
+    femaleOutfitText.textContent = clothes.female;
+
+    survivalTipText.textContent = funSurvivalTip(day);
+
+    const acts = activityIdeas(day, decision);
+    outsideIdeasText.innerHTML =
+      "<ul style='margin:8px 0 0; padding-left:18px; color: var(--muted);'>" +
+      acts.outside.map(x => `<li>${x}</li>`).join("") +
+      "</ul>";
+
+    insideIdeasText.innerHTML =
+      "<ul style='margin:8px 0 0; padding-left:18px; color: var(--muted);'>" +
+      acts.inside.map(x => `<li>${x}</li>`).join("") +
+      "</ul>";
+
+    motivationText.textContent = dailyMotivation(day);
+  }
+
+  // ---------------------------
+  // Theme
+  // ---------------------------
+  function applyTheme(){
+    if (state.themeMode === "light"){
+      document.body.setAttribute("data-theme","light");
+      return;
+    }
+    if (state.themeMode === "dark"){
+      document.body.setAttribute("data-theme","dark");
+      return;
+    }
+
+    // AUTO: time-of-day + today’s weather vibes
+    const today = state.forecast?.daily?.[0];
+    const rainy = (today?.precipProb ?? 0) >= 55;
+    const windy = (today?.windMax ?? 0) >= 32;
+    const chooseDark = state.isNight || rainy || windy;
+    document.body.setAttribute("data-theme", chooseDark ? "dark" : "light");
+  }
+
+  function cycleTheme(){
+    if (state.themeMode === "auto") state.themeMode = "light";
+    else if (state.themeMode === "light") state.themeMode = "dark";
+    else state.themeMode = "auto";
+
+    themeBtn.textContent = state.themeMode === "auto" ? "🎨 Theme: Auto"
+      : state.themeMode === "light" ? "🎨 Theme: Light"
+      : "🎨 Theme: Dark";
+
+    localStorage.setItem("sigo_themeMode", state.themeMode);
+    applyTheme();
+  }
+
+  // ---------------------------
+  // Tabs
+  // ---------------------------
+  function setTab(which){
+    const isDash = which === "dashboard";
+    tabDashboard.classList.toggle("active", isDash);
+    tabDashboard.setAttribute("aria-selected", String(isDash));
+    tabAbout.classList.toggle("active", !isDash);
+    tabAbout.setAttribute("aria-selected", String(!isDash));
+
+    pageDashboard.classList.toggle("hidden", !isDash);
+    pageAbout.classList.toggle("hidden", isDash);
+
+    // Hide search/toggles on About? (optional – here we keep toggles visible)
+    document.getElementById("searchRow").classList.toggle("hidden", !isDash);
+    document.getElementById("toggleRow").classList.toggle("hidden", false);
+  }
+
+  tabDashboard.addEventListener("click", () => setTab("dashboard"));
+  tabAbout.addEventListener("click", () => setTab("about"));
+
+  // ---------------------------
+  // Sass toggle
+  // ---------------------------
+  function toggleSass(){
+    state.extraSass = !state.extraSass;
+    sassBtn.classList.toggle("on", state.extraSass);
+    sassBtn.textContent = state.extraSass ? "✨ Extra Sass: On" : "✨ Extra Sass: Off";
+    localStorage.setItem("sigo_extraSass", state.extraSass ? "1" : "0");
+
+    // Rebuild unique quips for the week (so days stay unique but sassier)
+    if (state.forecast?.daily){
+      state.forecast.uniqueQuipsByDate = buildUniqueQuipsForWeek(state.forecast.daily);
+      renderAll();
+    }
+  }
+
+  // ---------------------------
+  // Geocoding + Forecast
+  // ---------------------------
+  async function geocodePlace(query){
+    const url = `${GEO_URL}?name=${encodeURIComponent(query)}&count=5&language=en&format=json`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Geocoding failed");
+    const data = await res.json();
+    if (!data.results || !data.results.length) return null;
+
+    // Choose top result
+    const r = data.results[0];
+    return {
+      name: [r.name, r.admin1, r.country].filter(Boolean).join(", "),
+      lat: r.latitude,
+      lon: r.longitude,
+      country: r.country || ""
+    };
+  }
+
+  async function fetchForecast(lat, lon){
+    // Daily: max/min temp, precip prob, wind max, uv max
+    // Hourly: temp, precip prob, wind speed, humidity, uv index
+    const params = new URLSearchParams({
+      latitude: String(lat),
+      longitude: String(lon),
+      timezone: "auto",
+      daily: [
+        "temperature_2m_max",
+        "temperature_2m_min",
+        "precipitation_probability_max",
+        "wind_speed_10m_max",
+        "uv_index_max"
+      ].join(","),
+      hourly: [
+        "temperature_2m",
+        "precipitation_probability",
+        "wind_speed_10m",
+        "relative_humidity_2m",
+        "uv_index"
+      ].join(",")
+    });
+
+    const url = `${FORECAST_URL}?${params.toString()}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Forecast failed");
+    const raw = await res.json();
+
+    const daily = raw.daily.time.map((date, i) => ({
+      date,
+      tmax: raw.daily.temperature_2m_max[i],
+      tmin: raw.daily.temperature_2m_min[i],
+      precipProb: raw.daily.precipitation_probability_max[i],
+      windMax: raw.daily.wind_speed_10m_max[i],
+      uvMax: raw.daily.uv_index_max[i],
+    }));
+
+    const hourly = raw.hourly;
+
+    const bestWindowsByDate = computeBestWindowsForWeek(daily, hourly);
+    const uniqueQuipsByDate = buildUniqueQuipsForWeek(daily);
+
+    return { raw, daily, hourly, bestWindowsByDate, uniqueQuipsByDate };
+  }
+
+  // ---------------------------
+  // Derived metrics
+  // ---------------------------
+  function daytimeHourlyIndexesForDate(dateStr, hourly){
+    const idxs = [];
+    const times = hourly.time;
+    for (let i = 0; i < times.length; i++){
+      if (!times[i].startsWith(dateStr)) continue;
+      const h = new Date(times[i]).getHours();
+      // daytime-ish
+      if (h >= 7 && h <= 19) idxs.push(i);
+    }
+    return idxs;
+  }
+
+  function avg(arr, idxs){
+    if (!idxs.length) return null;
+    let s = 0;
+    for (const i of idxs) s += arr[i];
+    return s / idxs.length;
+  }
+
+  function fmtTemp(n){
+    if (n == null || Number.isNaN(n)) return "—";
+    return `${Math.round(n)}°`;
+  }
+
+  function fmtPct(n){
+    if (n == null || Number.isNaN(n)) return "—";
+    return `${Math.round(n)}%`;
+  }
+
+  function fmtWind(n){
+    if (n == null || Number.isNaN(n)) return "—";
+    return `${Math.round(n)} km/h`;
+  }
+
+  // ---------------------------
+  // Render
+  // ---------------------------
+  function renderDays(){
+    const daily = state.forecast.daily;
+    daysRow.innerHTML = "";
+
+    daily.forEach((d, idx) => {
+      const card = document.createElement("div");
+      card.className = "dayCard" + (idx === state.selectedIndex ? " active" : "");
+
+      const isToday = idx === 0;
+      const emoji = dominantWeatherEmoji(d);
+      const dow = isToday ? "Today" : fmtDay(d.date);
+
+      card.innerHTML = `
+        <div class="dayTop">
+          <div class="dow">${dow}</div>
+          <div class="emoji" aria-hidden="true">${emoji}</div>
+        </div>
+        <div class="mini"><span>Rain</span><strong>${fmtPct(d.precipProb)}</strong></div>
+        <div class="mini"><span>High</span><strong>${fmtTemp(d.tmax)}</strong></div>
+      `;
+
+      card.addEventListener("click", () => {
+        state.selectedIndex = idx;
+        renderAll();
+      });
+
+      daysRow.appendChild(card);
+    });
+  }
+
+  function setAnswerBadge(decision){
+    answerText.classList.remove("yes","no","maybe");
+    if (decision === "YES"){
+      answerText.textContent = "YES";
+      answerText.classList.add("yes");
+    } else if (decision === "NO"){
+      answerText.textContent = "NO";
+      answerText.classList.add("no");
+    } else {
+      answerText.textContent = "MAYBE";
+      answerText.classList.add("maybe");
+    }
+  }
+
+  function renderSelected(){
+    const day = state.forecast.daily[state.selectedIndex];
+    timeChip.textContent = `🗓️ ${fmtShort(day.date)}`;
+    const { decision, score } = decisionEngine(day);
+    setAnswerBadge(decision);
+
+    // Unique quip per day
+    const quip = state.forecast.uniqueQuipsByDate.get(day.date) || "Weather is happening. React accordingly.";
+    quipText.textContent = quip;
+
+    selectedChip.textContent = `Selected: ${state.selectedIndex === 0 ? "Today" : fmtDay(day.date)}`;
+
+    // Hourly-derived averages
+    const idxs = daytimeHourlyIndexesForDate(day.date, state.forecast.hourly);
+    const avgHumidity = avg(state.forecast.hourly.relative_humidity_2m, idxs);
+    const avgWind = avg(state.forecast.hourly.wind_speed_10m, idxs);
+
+    humidityVal.textContent = avgHumidity == null ? "—" : fmtPct(avgHumidity);
+    windVal.textContent = day.windMax == null ? (avgWind == null ? "—" : fmtWind(avgWind)) : fmtWind(day.windMax);
+
+    rainVal.textContent = fmtPct(day.precipProb);
+
+    // Temp range now: High / Low
+    tempVal.textContent = `High: ${fmtTemp(day.tmax)}  •  Low: ${fmtTemp(day.tmin)}`;
+
+    const uv = day.uvMax;
+    uvVal.textContent = uv == null ? "—" : `${uvLabel(uv)} (UV ${Math.round(uv)})`;
+
+    // Best time for ANY selected day
+    const best = state.forecast.bestWindowsByDate.get(day.date) || "—";
+    bestTimeVal.textContent = best;
+
+    // Survival guide + activities + motivation
+    renderGuideExtras(day, decision);
+
+    // “Score” summary on the right
+    extraSummary.textContent = `Score: ${Math.round(score)}/100`;
+
+    // Fun savings blurb varies by decision
+    if (decision === "YES"){
+      moneyNote.textContent = "🌿 Choosing outside might save ~$1.50 and 2kg CO₂ (scientific vibes, not science).";
+    } else if (decision === "MAYBE"){
+      moneyNote.textContent = "🌿 Outside is possible… but bring a backup plan (and snacks).";
+    } else {
+      moneyNote.textContent = "🌿 Staying inside might save your outfit and your will to live. Respect.";
+    }
+  }
+
+  function renderAll(){
+    if (!state.forecast) return;
+    renderDays();
+    renderSelected();
+    applyTheme();
+  }
+
+  // ---------------------------
+  // Search / location actions
+  // ---------------------------
+  async function setLocationAndLoad({ name, lat, lon, country }){
+    state.name = name;
+    state.lat = lat;
+    state.lon = lon;
+    state.country = country || "";
+    state.selectedIndex = 0;
+
+    locationChip.textContent = `📍 ${name}`;
+    timeChip.textContent = `🗓️ ${fmtShort(new Date().toISOString().slice(0,10))}`;
+
+    // Persist location
+    localStorage.setItem("sigo_lastPlace", JSON.stringify({ name, lat, lon, country }));
+
+    quipText.textContent = "Consulting the sky’s HR department…";
+    answerText.textContent = "…";
+    answerText.classList.remove("yes","no","maybe");
+
+    const forecast = await fetchForecast(lat, lon);
+    state.forecast = forecast;
+
+    renderAll();
+  }
+
+  async function onSearch(){
+    const q = (placeInput.value || "").trim();
+    if (!q) return;
+
+    try{
+        const place = await geocodePlace(q);
+        if (!place){
+        alert("Couldn’t find that place. Try a suburb/city + state/country.");
+        return;
+        }
+        await setLocationAndLoad(place);
+    } catch (e){
+        console.error(e);
+        alert("Search failed. Try again in a moment.");
+    }
+    }
+
+
+  async function onUseMyLocation(){
+    if (!navigator.geolocation){
+      alert("Geolocation not supported in this browser.");
+      return;
+    }
+
+    useMeBtn.disabled = true;
+    useMeBtn.textContent = "Locating…";
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try{
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        // Reverse “name”: use a quick Open-Meteo geocode trick by searching nearby
+        // (No official reverse endpoint here, so we label as Near you)
+        await setLocationAndLoad({
+          name: `Near you (${lat.toFixed(2)}, ${lon.toFixed(2)})`,
+          lat, lon, country: ""
+        });
+      } catch (e){
+        console.error(e);
+        alert("Couldn’t load weather for your location.");
+      } finally {
+        useMeBtn.disabled = false;
+        useMeBtn.textContent = "Use my location";
+      }
+    }, (err) => {
+      console.error(err);
+      alert("Location permission denied (or unavailable). You can still search a place.");
+      useMeBtn.disabled = false;
+      useMeBtn.textContent = "Use my location";
+    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+  }
+
+  // ---------------------------
+  // Init
+  // ---------------------------
+  function loadPrefs(){
+    state.extraSass = localStorage.getItem("sigo_extraSass") === "1";
+    sassBtn.classList.toggle("on", state.extraSass);
+    sassBtn.textContent = state.extraSass ? "✨ Extra Sass: On" : "✨ Extra Sass: Off";
+
+    state.themeMode = localStorage.getItem("sigo_themeMode") || "auto";
+    themeBtn.textContent = state.themeMode === "auto" ? "🎨 Theme: Auto"
+      : state.themeMode === "light" ? "🎨 Theme: Light"
+      : "🎨 Theme: Dark";
+  }
+
+  async function init(){
+    computeNightFlag();
+    loadPrefs();
+    applyTheme();
+
+    // Wire actions
+    placeInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") onSearch();
+    });
+
+    useMeBtn.addEventListener("click", onUseMyLocation);
+    sassBtn.addEventListener("click", toggleSass);
+    themeBtn.addEventListener("click", cycleTheme);
+
+    // Load last place if any; else default
+    const saved = localStorage.getItem("sigo_lastPlace");
+    if (saved){
+      try{
+        const place = JSON.parse(saved);
+        if (place && typeof place.lat === "number" && typeof place.lon === "number"){
+          placeInput.value = place.name || "";
+          await setLocationAndLoad(place);
+          return;
+        }
+      } catch {}
+    }
+
+    // Default: Melbourne, AU (friendly starter)
+    placeInput.value = "Melbourne, Australia";
+    await setLocationAndLoad({
+      name: "Melbourne, Australia",
+      lat: -37.8136,
+      lon: 144.9631,
+      country: "Australia"
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
