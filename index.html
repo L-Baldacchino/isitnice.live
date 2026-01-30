@@ -899,6 +899,16 @@ body[data-theme="dark"] .unitBtn{
 
   function cToF(c){ return (c * 9/5) + 32; }
 
+  function kmhToMph(kmh){ return kmh * 0.621371; }
+
+  function fmtWind(kmh){
+    if (kmh == null) return "—";
+    const v = (state.tempUnit === "F") ? kmhToMph(kmh) : kmh;
+    const unit = (state.tempUnit === "F") ? "mph" : "km/h";
+    return `${Math.round(v)} ${unit}`;
+  }
+
+
   function fmtTemp(c){
     if (c == null) return "—";
     const v = (state.tempUnit === "F") ? cToF(c) : c;
@@ -907,8 +917,12 @@ body[data-theme="dark"] .unitBtn{
 
   function setUnitButtonLabel(){
     if (!unitBtn) return;
-    unitBtn.textContent = state.tempUnit === "F" ? "🌡️ °F" : "🌡️ °C";
+    unitBtn.textContent =
+      state.tempUnit === "F"
+        ? "🌡️ °F • 💨 mph"
+        : "🌡️ °C • 💨 km/h";
   }
+
 
 
   function escapeHtml(str){
@@ -1205,8 +1219,9 @@ body[data-theme="dark"] .unitBtn{
     if (rainBad) add(`Rain risk is high (${Math.round(precip)}%).`);
     else if (rainMeh) add(`Some rain chance (${Math.round(precip)}%).`);
 
-    if (windBad) add(`Wind is strong (${Math.round(wind)} km/h).`);
-    else if (windMeh) add(`Breezy winds (${Math.round(wind)} km/h).`);
+    if (windBad) add(`Wind is strong (${fmtWind(wind)}).`);
+    else if (windMeh) add(`Breezy winds (${fmtWind(wind)}).`);
+
 
     if (tempBad) add(`Temps look uncomfortable (High ${fmtTemp(tmax)}, Low ${fmtTemp(tmin)}).`);
     else if (tempMeh) add(`Temps are a bit meh (High ${fmtTemp(tmax)}, Low ${fmtTemp(tmin)}).`);
@@ -1849,7 +1864,7 @@ body[data-theme="dark"] .unitBtn{
     // ✅ Current conditions: only show when selected day is Today (index 0)
     if (state.selectedIndex === 0 && state.current){
       const t = state.current.temp != null ? fmtTemp(state.current.temp) : "—";
-      const w = state.current.wind != null ? `${Math.round(state.current.wind)} km/h` : "—";
+      const w = state.current.wind != null ? fmtWind(state.current.wind) : "—";
       const r = state.current.rain != null ? `${Math.round(state.current.rain)}%` : "—";
       const u = (state.current.uv != null && !state.isNight) ? `${Math.round(state.current.uv)}` : "—";
 
@@ -1877,7 +1892,7 @@ body[data-theme="dark"] .unitBtn{
 
     // metrics
     humidityVal.textContent = (day.humidityMax == null) ? "—" : `${Math.round(day.humidityMax)}%`;
-    windVal.textContent = (day.windMax == null) ? "—" : `${Math.round(day.windMax)} km/h`;
+    windVal.textContent = (day.windMax == null) ? "—" : fmtWind(day.windMax);
     rainVal.textContent = (day.precipProb == null) ? "—" : `${Math.round(day.precipProb)}%`;
     tempVal.textContent = (day.tmax == null || day.tmin == null)
       ? "—"
