@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Should I Go Outside?</title>
+  <title>Is it nice?</title>
   <style>
     :root{
       --radius: 22px;
@@ -85,95 +85,166 @@
     .brand p{ margin:2px 0 0; font-size: 13px; color: var(--muted); }
 
     .topRight{
-        display:grid;
-        grid-template-columns: 1fr;
-        gap:12px;
-        flex:1;
-        min-width: 360px;
-        max-width: 680px;
-        align-items:stretch;
-        }
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      flex:1;
+      min-width: 360px;
+      max-width: 680px;
+      align-items:stretch;
+    }
 
-    /* Search bar panel that sits above the main YES/NO/MAYBE card */
-    /* --- Pill search bar (like your screenshot) --- */
     .searchBarPanel{
-    margin: 0 0 16px;
+      position: relative;
+      z-index: 1000;
     }
 
     .searchPill{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 14px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
 
-    padding: 18px 22px;
-    border-radius: 999px;
+      padding: 18px 22px;
+      border-radius: 999px;
 
-    background: rgba(18, 24, 44, .55);
-    border: 1px solid rgba(255,255,255,.10);
-    box-shadow: 0 14px 34px rgba(0,0,0,.25);
+      background: rgba(18, 24, 44, .55);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 14px 34px rgba(0,0,0,.25);
 
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      position: relative;
+      z-index: 1001;
     }
 
     body[data-theme="light"] .searchPill{
-    background: rgba(255,255,255,.55);
-    border: 1px solid rgba(20,20,20,.10);
-    box-shadow: 0 14px 34px rgba(0,0,0,.10);
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(20,20,20,.10);
+      box-shadow: 0 14px 34px rgba(0,0,0,.10);
     }
-
-    .searchIcon{
-    font-size: 22px;
-    opacity: .9;
+    body[data-theme="light"] .suggestions{
+      background-color: #ffffff;
+      border-color: rgba(20,20,20,.15);
+      box-shadow: 0 18px 40px rgba(0,0,0,.15);
     }
+    body[data-theme="light"] .sItem + .sItem{
+      border-top: 1px solid rgba(0,0,0,.08);
+    }
+    .searchIcon{ font-size: 22px; opacity: .9; }
 
     .searchPill input{
-    flex: 1;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 120px;
     }
 
-    .searchPill input::placeholder{
-    color: rgba(255,255,255,.70);
-    }
+    .searchPill input::placeholder{ color: rgba(255,255,255,.70); }
+    body[data-theme="light"] .searchPill input::placeholder{ color: rgba(16,17,20,.55); }
 
-    body[data-theme="light"] .searchPill input::placeholder{
-    color: rgba(16,17,20,.55);
-    }
-
-    /* small location icon button inside pill */
     .pillBtn{
-    border: 0;
-    outline: 0;
-    background: rgba(255,255,255,.10);
-    color: var(--text);
-    width: 42px;
-    height: 42px;
-    border-radius: 999px;
-    cursor: pointer;
-    display: grid;
-    place-items: center;
+      border: 0;
+      outline: 0;
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      position: relative;
+      flex: 0 0 auto;
     }
-
-    body[data-theme="light"] .pillBtn{
-    background: rgba(16,17,20,.08);
-    }
-
+    body[data-theme="light"] .pillBtn{ background: rgba(16,17,20,.08); }
     .pillBtn:hover{ opacity: .92; }
+    .pillBtn:disabled{ opacity: .55; cursor: not-allowed; }
 
-    /* tiny helper text under pill */
-    .searchHint{
-    margin-top: 8px;
-    padding-left: 14px;
-    font-size: 12px;
-    color: var(--muted);
+    .pillBtn.loading::after{
+      content:"";
+      position:absolute;
+      inset: 7px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.25);
+      border-top-color: rgba(255,255,255,.85);
+      animation: spin 0.85s linear infinite;
+      pointer-events: none;
+    }
+    body[data-theme="light"] .pillBtn.loading::after{
+      border-color: rgba(16,17,20,.18);
+      border-top-color: rgba(16,17,20,.72);
+    }
+    @keyframes spin{ to{ transform: rotate(360deg); } }
+
+    .suggestions{
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: calc(100% + 10px);
+      z-index: 9999;
+
+      /* FORCE SOLID COLOUR */
+      background-color: #0e1428; /* dark mode base */
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+
+      box-shadow: 0 20px 50px rgba(0,0,0,.55);
+
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+
+      overflow: hidden;
+      display: none;
     }
 
+
+    .suggestions.show{
+      display: block;
+    }
+
+    .sItem{
+      padding: 14px 16px;
+      cursor: pointer;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+
+      background: transparent;
+    }
+    .sItem + .sItem{
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .sItem:hover,
+    .sItem.active{
+      background: rgba(78,134,255,.18);
+    }
+
+    .sItem .sTitle{
+      font-weight: 900;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    .sItem .sSub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+    .sPin{ opacity:.9; padding-top: 1px; }
+
+    .searchHint{
+      margin-top: 8px;
+      padding-left: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
 
     .btn{
       border:1px solid var(--stroke);
@@ -218,34 +289,31 @@
     }
 
     .toggles{
-        display:flex;
-        gap:10px;
-        align-items:center;
-        justify-content:flex-start;
-        flex: 0 0 auto;
-        flex-wrap:wrap;
-        }
-
-    .toggles .coffee{
-        margin-left: auto;
-        }
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-start;
+      flex: 0 0 auto;
+      flex-wrap:wrap;
+    }
+    .toggles .coffee{ margin-left: auto; }
 
     .tabs{
-        width:100%;
-        display:flex;
-        gap:10px;
-        align-items:center;
-        justify-content:flex-start;
-        }
+      width:100%;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-start;
+    }
 
     .controlsRow{
-        width:100%;
-        display:flex;
-        gap:12px;
-        align-items:center;
-        justify-content:flex-start;
-        flex-wrap:wrap; /* allows wrap nicely on small screens */
-        }
+      width:100%;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:flex-start;
+      flex-wrap:wrap;
+    }
 
     .tab{
       border:0;
@@ -283,7 +351,7 @@
       padding:18px;
     }
 
-    .hero{ display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .hero{ display:flex; gap:16px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
     .bigAnswer{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
 
     .badge{
@@ -295,14 +363,38 @@
 
     .question{ font-weight: 800; font-size: 16px; margin:0 0 4px; }
     .quip{ margin:0; color: var(--muted); font-size: 14px; max-width: 560px; }
+    .reason{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 560px;
+      min-height: 1.35em;
+      line-height: 1.35em;
+    }
 
-    .metaRow{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
+    .metaRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap: nowrap;
+      margin-top: 4px;
+    }
+    @media (max-width: 520px){
+      .metaRow{ flex-wrap: wrap; justify-content:flex-start; }
+    }
+
     .chip{
       padding:8px 10px; border-radius: 999px;
       background: var(--chip);
       color: var(--chipText);
       font-size: 12px;
       border:1px solid rgba(255,255,255,.0);
+
+      max-width: 360px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     body[data-theme="dark"] .chip{ border-color: rgba(255,255,255,.06); }
 
@@ -438,25 +530,9 @@
 
     .hidden{ display:none !important; }
 
-    /* About page layout */
-    .aboutWrap{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:16px;
-    }
-    .aboutTitle{
-      font-size: 34px;
-      margin: 0 0 8px;
-      letter-spacing: -1px;
-      font-weight: 950;
-    }
-    .aboutText{
-      margin:0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
-      max-width: 820px;
-    }
+    .aboutWrap{ display:grid; grid-template-columns: 1fr; gap:16px; }
+    .aboutTitle{ font-size: 34px; margin: 0 0 8px; letter-spacing: -1px; font-weight: 950; }
+    .aboutText{ margin:0; color: var(--muted); font-size: 16px; line-height: 1.55; max-width: 820px; }
     .aboutSectionTitle{
       margin: 18px 0 8px;
       font-weight: 950;
@@ -465,39 +541,13 @@
       text-transform: uppercase;
       font-size: 12px;
     }
-    .scienceList{
-      margin: 0;
-      padding-left: 18px;
-      color: var(--text);
-    }
-    .scienceList li{
-      margin: 10px 0;
-      line-height: 1.5;
-    }
-    .scienceList li span{
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .twoCards{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin-top: 10px;
-    }
-    @media (max-width: 760px){
-      .twoCards{ grid-template-columns: 1fr; }
-    }
-
-    .ctaRow{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top: 14px;
-    }
-
-    a.link{
-      color: inherit;
-    }
+    .scienceList{ margin: 0; padding-left: 18px; color: var(--text); }
+    .scienceList li{ margin: 10px 0; line-height: 1.5; }
+    .scienceList li span{ color: var(--muted); font-weight: 600; }
+    .twoCards{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top: 10px; }
+    @media (max-width: 760px){ .twoCards{ grid-template-columns: 1fr; } }
+    .ctaRow{ display:flex; gap:12px; flex-wrap:wrap; margin-top: 14px; }
+    a.link{ color: inherit; }
   </style>
 </head>
 
@@ -507,47 +557,46 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>Should I Go Outside?</h1>
+          <h1>Is it nice?</h1>
           <p>Weather-powered decisions, delivered with maximum sass.</p>
         </div>
       </div>
 
       <div class="topRight">
         <div class="tabs" role="tablist" aria-label="Pages">
-            <button class="tab active" id="tabDashboard" role="tab" aria-selected="true">🌤️ Dashboard</button>
-            <button class="tab" id="tabAbout" role="tab" aria-selected="false">ℹ️ About</button>
-            </div>
+          <button class="tab active" id="tabDashboard" role="tab" aria-selected="true">🌤️ Dashboard</button>
+          <button class="tab" id="tabAbout" role="tab" aria-selected="false">ℹ️ About</button>
+        </div>
 
-            <div class="controlsRow">
-
-            <div class="toggles" id="toggleRow">
-                <button class="btn" id="sassBtn" title="Make the app extra unhinged">✨ Extra Sass: Off</button>
-                <button class="btn" id="themeBtn" title="Theme: Auto → Light → Dark">🎨 Theme: Auto</button>
-                <a class="btn coffee" href="https://buymeacoffee.com/teraau" target="_blank" rel="noopener">☕ Buy me a coffee</a>
-            </div>
-            </div>
-
+        <div class="controlsRow">
+          <div class="toggles" id="toggleRow">
+            <button class="btn" id="sassBtn" title="Make the app extra unhinged">✨ Extra Sass: Off</button>
+            <button class="btn" id="themeBtn" title="Theme: Auto → Light → Dark">🎨 Theme: Auto</button>
+            <a class="btn coffee" href="https://buymeacoffee.com/teraau" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+          </div>
+        </div>
       </div>
     </header>
 
     <!-- DASHBOARD -->
     <section id="pageDashboard">
-        <div class="searchBarPanel" id="searchRow">
-            <div class="searchPill" title="Search a location">
-                <span class="searchIcon" aria-hidden="true">🔎</span>
+      <div class="searchBarPanel" id="searchRow">
+        <div class="searchPill" title="Search a location">
+          <span class="searchIcon" aria-hidden="true">🔎</span>
 
-                <input
-                id="placeInput"
-                placeholder="Search suburb/city (e.g., Sunbury, Victoria)"
-                autocomplete="off"
-                />
+          <input
+            id="placeInput"
+            placeholder="Search suburb/city (e.g., Melbourne, Victoria)"
+            autocomplete="off"
+          />
 
-                <button class="pillBtn" id="useMeBtn" type="button" title="Use my location">📍</button>
-            </div>
+          <button class="pillBtn" id="useMeBtn" type="button" title="Use my location" aria-label="Use my location">📍</button>
 
-            <div class="searchHint">Press Enter to search</div>
+          <div class="suggestions" id="suggestions" role="listbox" aria-label="Location suggestions"></div>
         </div>
 
+        <div class="searchHint">Type to see suggestions, or press Enter</div>
+      </div>
 
       <main>
         <section class="panel" id="mainPanel">
@@ -555,14 +604,15 @@
             <div class="bigAnswer">
               <h2 class="badge maybe" id="answerText">MAYBE</h2>
               <div>
-                <p class="question">Should I go outside?</p>
+                <p class="question">Is it nice?</p>
                 <p class="quip" id="quipText">Loading the sky’s mood...</p>
+                <p class="reason" id="reasonText"></p>
               </div>
             </div>
 
             <div class="metaRow">
-              <div class="chip" id="locationChip">📍 Finding you…</div>
               <div class="chip" id="timeChip">⏱️ —</div>
+              <div class="chip" id="locationChip">📍 Finding you…</div>
             </div>
           </div>
 
@@ -572,6 +622,10 @@
           </div>
 
           <div class="days" id="daysRow"></div>
+          <div class="metric wide" id="currentMetric" style="display:none; margin-top:12px;">
+            <div class="label">🕒 Current conditions</div>
+            <div class="value" id="currentVal">—</div>
+          </div>
 
           <div class="grid2">
             <div class="metric">
@@ -662,18 +716,17 @@
     <!-- ABOUT -->
     <section id="pageAbout" class="hidden">
       <div class="panel aboutWrap">
-        <h2 class="aboutTitle">Why “Should I Go Outside?”</h2>
+        <h2 class="aboutTitle">Why “Is it nice?”</h2>
         <p class="aboutText">
           I made this because “is it a good day to go out?” is a daily question — and the weather apps often give
-          you *data*, not a *decision*. This site tries to translate forecast chaos into a simple YES/NO/MAYBE,
+          you <i>data</i>, not a <i>decision</i>. This site tries to translate forecast chaos into a simple YES/NO/MAYBE,
           plus some practical tips and a little sass to keep it interesting.
         </p>
 
         <div class="aboutSectionTitle">How it decides</div>
         <p class="aboutText">
-          The score weighs multiple factors: rain probability, wind, temperature comfort, and UV. Then it picks the best
-          “go outside” window by scanning hourly conditions and choosing the strongest 2-hour period.
-          It’s a vibe-based helper, not an oracle.
+          The decision weighs rain probability, wind, temperature comfort, and UV (daytime only). Then it picks the best
+          “go outside” window by scanning hourly conditions and choosing the strongest 2-hour period (9am–5pm).
         </p>
 
         <div class="aboutSectionTitle">The “science-ish” bits</div>
@@ -707,8 +760,8 @@
         </p>
         <div class="ctaRow">
           <a class="btn coffee" href="https://buymeacoffee.com/teraau" target="_blank" rel="noopener">☕ Support the maker</a>
-          <a class="btn primary" href="#" onclick="alert('Tip: add your LinkedIn/email links in the HTML where these buttons are.'); return false;">💬 Talk to me (add link)</a>
-          <a class="btn" href="#" onclick="alert('Tip: add your email link (mailto:) in the HTML where this button is.'); return false;">✉️ Email me (add link)</a>
+          <a class="btn primary" href="https://www.linkedin.com/in/lukebaldacchino/" target="_blank" rel="noopener">💬 Talk to me</a>
+         
         </div>
 
         <div class="aboutSectionTitle">Legal-ish disclaimer</div>
@@ -725,13 +778,13 @@
   </div>
 
 <script>
-  // ---------------------------
-  // Open-Meteo endpoints (no API key)
-  // ---------------------------
+(() => {
   const GEO_URL = "https://geocoding-api.open-meteo.com/v1/search";
+  const GEO_REV_URL = "https://geocoding-api.open-meteo.com/v1/reverse";
   const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
+  const BDC_REV_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
-  // UI
+
   const tabDashboard = document.getElementById("tabDashboard");
   const tabAbout = document.getElementById("tabAbout");
   const pageDashboard = document.getElementById("pageDashboard");
@@ -742,8 +795,11 @@
   const sassBtn = document.getElementById("sassBtn");
   const themeBtn = document.getElementById("themeBtn");
 
+  const suggestionsEl = document.getElementById("suggestions");
+
   const answerText = document.getElementById("answerText");
   const quipText = document.getElementById("quipText");
+  const reasonText = document.getElementById("reasonText");
   const locationChip = document.getElementById("locationChip");
   const timeChip = document.getElementById("timeChip");
   const selectedChip = document.getElementById("selectedChip");
@@ -764,28 +820,45 @@
   const outsideIdeasText = document.getElementById("outsideIdeasText");
   const insideIdeasText = document.getElementById("insideIdeasText");
   const motivationText = document.getElementById("motivationText");
+  const currentMetric = document.getElementById("currentMetric");
+  const currentVal = document.getElementById("currentVal");
+
 
   document.getElementById("yearNow").textContent = new Date().getFullYear();
 
-  // ---------------------------
-  // State
-  // ---------------------------
   let state = {
     name: "—",
     country: "",
     lat: null,
     lon: null,
-    forecast: null,          // { raw, daily, hourly, bestWindowsByDate, uniqueQuipsByDate }
+    timezone: "auto",
+    forecast: null,
+    current: null, // { temp, wind, rain, humidity, uv }
     selectedIndex: 0,
     extraSass: false,
-    themeMode: "auto",       // auto | light | dark
-    isNight: false
+    themeMode: "auto",
+    isNight: false,
+
+    // suggestions
+    suggestionItems: [],
+    suggestionActiveIndex: -1,
+    suggestionOpen: false,
+
+    // maps
+    quipsByDate: new Map(),
+    bestWindowByDate: new Map(),
   };
 
-  // ---------------------------
-  // Helpers
-  // ---------------------------
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
   function dailySeed(dateStr){
     let h = 0;
@@ -795,22 +868,18 @@
     }
     return Math.abs(h);
   }
-
   function pickByDay(arr, dateStr){
     const seed = dailySeed(dateStr);
     return arr[seed % arr.length];
   }
-
-  function fmtDay(dateStr){
+  function fmtDay(dateStr, tz){
     const d = new Date(dateStr + "T00:00:00");
-    return d.toLocaleDateString(undefined, { weekday: "short" });
+    return d.toLocaleDateString(undefined, { weekday: "short", timeZone: tz || undefined });
   }
-
-  function fmtShort(dateStr){
+  function fmtShort(dateStr, tz){
     const d = new Date(dateStr + "T00:00:00");
-    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: tz || undefined });
   }
-
   function uvLabel(uv){
     if (uv == null) return "—";
     if (uv >= 11) return "EXTREME";
@@ -825,7 +894,6 @@
     state.isNight = (h < 6 || h >= 19);
   }
 
-  // Emoji = dominant daytime event (daily aggregates)
   function dominantWeatherEmoji(day){
     const rain = day.precipProb ?? 0;
     const wind = day.windMax ?? 0;
@@ -858,9 +926,6 @@
     return "meh";
   }
 
-  // ---------------------------
-  // Unique quips per day (so days don’t reuse the same ones)
-  // ---------------------------
   const QUIPS = {
     normal: {
       rain: [
@@ -981,9 +1046,8 @@
   };
 
   function buildUniqueQuipsForWeek(dailyArr){
-    const dates = dailyArr.map(d => d.date);
-    const used = new Map(); // key -> Set(quip)
-    const out = new Map();  // date -> quip
+    const used = new Map();
+    const out = new Map();
 
     function pickUnique(key, date){
       if (!used.has(key)) used.set(key, new Set());
@@ -992,9 +1056,8 @@
       const pool = (state.extraSass ? QUIPS.extra[key] : QUIPS.normal[key]) || [];
       if (!pool.length) return "Weather is happening. React accordingly.";
 
-      // Try a few deterministic indices, then fallback
       const seed = dailySeed(date + "|" + key);
-      const step = 3; // prime-ish
+      const step = 3;
       for (let attempt = 0; attempt < pool.length; attempt++){
         const idx = (seed + attempt * step) % pool.length;
         const candidate = pool[idx];
@@ -1003,7 +1066,6 @@
           return candidate;
         }
       }
-      // Pool exhausted; allow reuse (very unlikely with these pool sizes)
       return pool[seed % pool.length];
     }
 
@@ -1014,104 +1076,95 @@
     return out;
   }
 
-  // ---------------------------
-  // Decision engine
-  // ---------------------------
+  // Decision + score + reasons
   function decisionEngine(day){
-  const precip = day.precipProb ?? 0; // %
-  const wind   = day.windMax ?? 0;    // km/h (Open-Meteo daily max wind speed)
-  const uv     = day.uvMax ?? 0;      // UV index
-  const tmax   = day.tmax ?? 20;      // °C
-  const tmin   = day.tmin ?? 10;      // °C
+    const precip = day.precipProb ?? 0;
+    const wind   = day.windMax ?? 0;
+    const uv     = day.uvMax ?? 0;
+    const tmax   = day.tmax ?? 20;
+    const tmin   = day.tmin ?? 10;
 
-  // ---------------------------
-  // 1) Classify each factor (good / meh / bad)
-  // Tune these thresholds to your taste.
-  // ---------------------------
+    const rainBad = precip >= 70;
+    const rainMeh = precip >= 25 && precip < 70;
 
-  // Rain
-  const rainBad = precip >= 70;
-  const rainMeh = precip >= 25 && precip < 70; // "slightly poor" range
-  
+    const windBad = wind >= 45;
+    const windMeh = wind >= 35 && wind < 45;
 
-  // Wind
-  const windBad = wind >= 40;
-  const windMeh = wind >= 25 && wind < 40;
+    const tempBad = (tmax >= 35) || (tmax <= 12) || (tmin <= 2);
+    const tempMeh = (!tempBad) && (tmax >= 31 || tmax <= 16 || tmin <= 6);
 
-  // Temperature comfort (use max mostly, but protect against icy mornings)
-  const tempBad = (tmax >= 35) || (tmax <= 12) || (tmin <= 2);
-  const tempMeh = (!tempBad) && (tmax >= 31 || tmax <= 16 || tmin <= 6);
+    const uvBad = (!state.isNight) && uv >= 11;
+    const uvMeh = (!state.isNight) && uv >= 8 && uv < 11;
 
-  // UV only matters if it's not night
-  const uvBad = (!state.isNight) && uv >= 11;               // extreme
-  const uvMeh = (!state.isNight) && uv >= 8 && uv < 11;     // very high/high
+    const badCount =
+      (rainBad ? 1 : 0) +
+      (windBad ? 1 : 0) +
+      (tempBad ? 1 : 0) +
+      (uvBad ? 1 : 0);
 
-  // ---------------------------
-  // 2) Rule-based decision (predictable)
-  // ---------------------------
-  const badCount =
-    (rainBad ? 1 : 0) +
-    (windBad ? 1 : 0) +
-    (tempBad ? 1 : 0) +
-    (uvBad ? 1 : 0);
+    const mehCount =
+      (rainMeh ? 1 : 0) +
+      (windMeh ? 1 : 0) +
+      (tempMeh ? 1 : 0) +
+      (uvMeh ? 1 : 0);
 
-  const mehCount =
-    (rainMeh ? 1 : 0) +
-    (windMeh ? 1 : 0) +
-    (tempMeh ? 1 : 0) +
-    (uvMeh ? 1 : 0);
+    let decision = "MAYBE";
+    if (badCount >= 1) decision = "NO";
+    else if (mehCount >= 3) decision = "NO";
+    else if (mehCount <= 1) decision = "YES";
+    else decision = "MAYBE";
+    if (decision === "YES" && precip > 25) decision = "MAYBE";
 
-  // NO: any true "bad" factor, or multiple meh factors stacking up
-  // (keeps it from saying YES on a day that's mediocre in 3 different ways)
-  let decision = "MAYBE";
-  if (badCount >= 1) decision = "NO";
-  else if (mehCount >= 3) decision = "NO";
-  else if (mehCount <= 1) decision = "YES";  // really good, or only one small issue
-  else decision = "MAYBE";                    // exactly 2 meh factors => "one or two slightly poor"
-  if (decision === "YES" && precip > 25) decision = "MAYBE"; // HARD RULE: if rain is above 25%, it can never be YES
+    let score = 100;
+    if (precip >= 70) score -= 50;
+    else if (precip >= 35) score -= 25;
+    else score -= precip * 0.2;
 
+    if (wind >= 40) score -= 35;
+    else if (wind >= 25) score -= 18;
+    else if (wind > 15) score -= (wind - 15) * 0.6;
 
-  // ---------------------------
-  // 3) Score (for your "Score: x/100" chip)
-  // Not the primary decision-maker anymore — just a nice indicator.
-  // ---------------------------
-  let score = 100;
+    if (tmax >= 35) score -= 35;
+    else if (tmax >= 31) score -= 15;
+    if (tmax <= 12) score -= 28;
+    else if (tmax <= 16) score -= 10;
+    if (tmin <= 2) score -= 12;
+    else if (tmin <= 6) score -= 6;
 
-  // Rain scoring
-  if (precip >= 70) score -= 50;
-  else if (precip >= 35) score -= 25;
-  else score -= precip * 0.2; // tiny penalty
+    if (!state.isNight){
+      if (uv >= 11) score -= 30;
+      else if (uv >= 8) score -= 15;
+      else if (uv >= 6) score -= 6;
+    }
 
-  // Wind scoring
-  if (wind >= 40) score -= 35;
-  else if (wind >= 25) score -= 18;
-  else if (wind > 15) score -= (wind - 15) * 0.6;
+    score = clamp(score, 0, 100);
 
-  // Temp scoring (simple comfort penalties)
-  if (tmax >= 35) score -= 35;
-  else if (tmax >= 31) score -= 15;
-  if (tmax <= 12) score -= 28;
-  else if (tmax <= 16) score -= 10;
-  if (tmin <= 2) score -= 12;
-  else if (tmin <= 6) score -= 6;
+    const reasons = [];
+    const add = (s) => reasons.push(s);
 
-  // UV scoring (daytime)
-  if (!state.isNight){
-    if (uv >= 11) score -= 30;
-    else if (uv >= 8) score -= 15;
-    else if (uv >= 6) score -= 6;
+    if (rainBad) add(`Rain risk is high (${Math.round(precip)}%).`);
+    else if (rainMeh) add(`Some rain chance (${Math.round(precip)}%).`);
+
+    if (windBad) add(`Wind is strong (${Math.round(wind)} km/h).`);
+    else if (windMeh) add(`Breezy winds (${Math.round(wind)} km/h).`);
+
+    if (tempBad) add(`Temps look uncomfortable (High ${Math.round(tmax)}°, Low ${Math.round(tmin)}°).`);
+    else if (tempMeh) add(`Temps are a bit meh (High ${Math.round(tmax)}°, Low ${Math.round(tmin)}°).`);
+
+    if (!state.isNight){
+      if (uvBad) add(`UV is extreme (${Math.round(uv)}).`);
+      else if (uvMeh) add(`UV is very high (${Math.round(uv)}).`);
+    }
+
+    if ((decision === "MAYBE" || decision === "NO") && reasons.length === 0){
+      add("A couple of factors are borderline — keep a backup plan.");
+    }
+
+    return { decision, score, reasons };
   }
 
-  score = clamp(score, 0, 100);
-
-  return { decision, score };
-}
-
-
-  // ---------------------------
-  // Best time to go outside (ANY of the 7 days)
-  // ---------------------------
-  function bestWindowForDate(dateStr, hourly){
+  // Best time window limited to 9am–5pm (2-hour windows)
+  function bestWindowForDate(dateStr, hourly, tz){
     if (!hourly || !hourly.time || !hourly.time.length) return "—";
 
     const times = hourly.time;
@@ -1127,8 +1180,8 @@
 
       const d0 = new Date(times[i]);
       const h = d0.getHours();
-      // Scan daytime-ish windows
-      if (h < 6 || h > 20) continue;
+
+      if (h < 9 || h > 16) continue;
 
       const avgTemp = (temp[i] + temp[i+1]) / 2;
       const avgRain = (rainP[i] + rainP[i+1]) / 2;
@@ -1140,7 +1193,6 @@
       if (avgWind > 12) s -= (avgWind - 12) * 3.0;
       if (avgUv > 8) s -= (avgUv - 8) * 10.0;
 
-      // temp comfort
       if (avgTemp < 16) s -= (16 - avgTemp) * 4.0;
       if (avgTemp > 30) s -= (avgTemp - 30) * 6.0;
 
@@ -1150,21 +1202,18 @@
     }
 
     if (!best) return "—";
-    const fmt = (d) => d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    const fmt = (d) => d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", timeZone: tz || undefined });
     return `${fmt(best.start)} – ${fmt(best.end)}`;
   }
 
-  function computeBestWindowsForWeek(dailyArr, hourly){
+  function computeBestWindowsForWeek(dailyArr, hourly, tz){
     const map = new Map();
     for (const d of dailyArr){
-      map.set(d.date, bestWindowForDate(d.date, hourly));
+      map.set(d.date, bestWindowForDate(d.date, hourly, tz));
     }
     return map;
   }
 
-  // ---------------------------
-  // Clothing recommendations (Male / Female) — COMPLETE
-  // ---------------------------
   function clothingByGender(day){
     const rain = day.precipProb ?? 0;
     const tmax = day.tmax ?? 20;
@@ -1175,12 +1224,11 @@
     const male = new Set();
     const female = new Set();
 
-
-    // Base outfits
+    // Shorts option for anything over 25°C ✅
     if (tmax <= 14){
       male.add("hoodie", "jeans", "closed shoes");
       female.add("jumper", "leggings or jeans", "closed shoes");
-    } else if (tmax >= 25){
+    } else if (tmax > 25){
       male.add("t-shirt", "shorts", "breathable shoes");
       female.add("light top", "shorts or dress", "sandals / breathable shoes");
     } else {
@@ -1188,7 +1236,6 @@
       female.add("top", "jeans / skirt");
     }
 
-    // Add-ons
     if (tmin <= 6 && tmax > 14){
       male.add("light jacket (morning/evening)");
       female.add("light jacket (morning/evening)");
@@ -1202,13 +1249,10 @@
       female.add("light jacket");
     }
     if (uv >= 6 && !state.isNight){
-      male.add("sunscreen");
-      male.add("hat");
-      female.add("sunscreen");
-      female.add("hat");
+      male.add("sunscreen", "hat");
+      female.add("sunscreen", "hat");
     }
 
-    // Footwear tweaks
     if (rain >= 35){
       male.add("closed shoes (avoid soggy socks)");
       female.add("closed shoes (avoid soggy socks)");
@@ -1218,15 +1262,11 @@
     }
 
     return {
-        male: Array.from(male).join(", "),
-        female: Array.from(female).join(", "),
-        };
-
+      male: Array.from(male).join(", "),
+      female: Array.from(female).join(", "),
+    };
   }
 
-  // ---------------------------
-  // Fun survival guide + activities + motivation
-  // ---------------------------
   function funSurvivalTip(day){
     const rain = day.precipProb ?? 0;
     const wind = day.windMax ?? 0;
@@ -1307,16 +1347,12 @@
       inside = (rain >= 50 || wind >= 35 || tmax >= 33) ? insideBad : insideNice;
     }
 
-    // Condition-specific nudges
     if (uv >= 9 && !state.isNight) outside = outside.map(x => x + " (wear SPF)");
     if (tmax >= 33) outside = outside.map(x => x + " (bring water)");
     if (rain >= 50) outside = outside.map(x => x + " (umbrella required)");
     if (wind >= 35) outside = outside.map(x => x + " (hold your hat)");
 
-    return {
-      outside: outside.slice(0, 3),
-      inside: inside.slice(0, 3),
-    };
+    return { outside: outside.slice(0, 3), inside: inside.slice(0, 3) };
   }
 
   function dailyMotivation(day){
@@ -1369,20 +1405,17 @@
     const acts = activityIdeas(day, decision);
     outsideIdeasText.innerHTML =
       "<ul style='margin:8px 0 0; padding-left:18px; color: var(--muted);'>" +
-      acts.outside.map(x => `<li>${x}</li>`).join("") +
+      acts.outside.map(x => `<li>${escapeHtml(x)}</li>`).join("") +
       "</ul>";
 
     insideIdeasText.innerHTML =
       "<ul style='margin:8px 0 0; padding-left:18px; color: var(--muted);'>" +
-      acts.inside.map(x => `<li>${x}</li>`).join("") +
+      acts.inside.map(x => `<li>${escapeHtml(x)}</li>`).join("") +
       "</ul>";
 
     motivationText.textContent = dailyMotivation(day);
   }
 
-  // ---------------------------
-  // Theme
-  // ---------------------------
   function applyTheme(){
     if (state.themeMode === "light"){
       document.body.setAttribute("data-theme","light");
@@ -1393,7 +1426,6 @@
       return;
     }
 
-    // AUTO: time-of-day + today’s weather vibes
     const today = state.forecast?.daily?.[0];
     const rainy = (today?.precipProb ?? 0) >= 55;
     const windy = (today?.windMax ?? 0) >= 32;
@@ -1414,324 +1446,649 @@
     applyTheme();
   }
 
-  // ---------------------------
-  // Tabs
-  // ---------------------------
   function setTab(which){
     const isDash = which === "dashboard";
+
     tabDashboard.classList.toggle("active", isDash);
     tabDashboard.setAttribute("aria-selected", String(isDash));
+
     tabAbout.classList.toggle("active", !isDash);
     tabAbout.setAttribute("aria-selected", String(!isDash));
 
     pageDashboard.classList.toggle("hidden", !isDash);
     pageAbout.classList.toggle("hidden", isDash);
 
-    // Hide search/toggles on About? (optional – here we keep toggles visible)
-    document.getElementById("searchRow").classList.toggle("hidden", !isDash);
-    document.getElementById("toggleRow").classList.toggle("hidden", false);
+    const searchRow = document.getElementById("searchRow");
+    if (searchRow) searchRow.classList.toggle("hidden", !isDash);
+
+    const toggleRow = document.getElementById("toggleRow");
+    if (toggleRow) toggleRow.classList.remove("hidden");
+
+    if (isDash) placeInput?.focus();
   }
 
-  tabDashboard.addEventListener("click", () => setTab("dashboard"));
-  tabAbout.addEventListener("click", () => setTab("about"));
+  // Suggestions UI
+  function openSuggestions(){
+    state.suggestionOpen = true;
+    suggestionsEl.classList.add("show");
+  }
+  function closeSuggestions(){
+    state.suggestionOpen = false;
+    state.suggestionActiveIndex = -1;
+    suggestionsEl.classList.remove("show");
+    suggestionsEl.innerHTML = "";
+    state.suggestionItems = [];
+  }
+  function renderSuggestions(items){
+    state.suggestionItems = items || [];
+    state.suggestionActiveIndex = -1;
 
-  // ---------------------------
-  // Sass toggle
-  // ---------------------------
-  function toggleSass(){
-    state.extraSass = !state.extraSass;
-    sassBtn.classList.toggle("on", state.extraSass);
-    sassBtn.textContent = state.extraSass ? "✨ Extra Sass: On" : "✨ Extra Sass: Off";
-    localStorage.setItem("sigo_extraSass", state.extraSass ? "1" : "0");
-
-    // Rebuild unique quips for the week (so days stay unique but sassier)
-    if (state.forecast?.daily){
-      state.forecast.uniqueQuipsByDate = buildUniqueQuipsForWeek(state.forecast.daily);
-      renderAll();
+    if (!items || items.length === 0){
+      closeSuggestions();
+      return;
     }
+
+    suggestionsEl.innerHTML = items.map((it, idx) => {
+      const title = `${it.name}${it.admin1 ? ", " + it.admin1 : ""}`;
+      const sub = `${it.country}${it.latitude != null ? " • " + it.latitude.toFixed(3) + "," + it.longitude.toFixed(3) : ""}`;
+      return `
+        <div class="sItem" role="option" data-idx="${idx}">
+          <div class="sPin">📍</div>
+          <div>
+            <div class="sTitle">${escapeHtml(title)}</div>
+            <div class="sSub">${escapeHtml(sub)}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    openSuggestions();
+
+    suggestionsEl.querySelectorAll(".sItem").forEach(el => {
+      el.addEventListener("mousedown", (e) => e.preventDefault());
+      el.addEventListener("click", () => {
+        const idx = Number(el.getAttribute("data-idx"));
+        chooseSuggestion(idx);
+      });
+    });
   }
 
-  // ---------------------------
-  // Geocoding + Forecast
-  // ---------------------------
-  async function geocodePlace(query){
-    const url = `${GEO_URL}?name=${encodeURIComponent(query)}&count=5&language=en&format=json`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Geocoding failed");
-    const data = await res.json();
-    if (!data.results || !data.results.length) return null;
+  function highlightSuggestion(){
+    const nodes = Array.from(suggestionsEl.querySelectorAll(".sItem"));
+    nodes.forEach((n, i) => n.classList.toggle("active", i === state.suggestionActiveIndex));
+  }
 
-    // Choose top result
-    const r = data.results[0];
+  function chooseSuggestion(idx){
+    const it = state.suggestionItems[idx];
+    if (!it) return;
+
+    const display = `${it.name}${it.admin1 ? ", " + it.admin1 : ""}${it.country ? ", " + it.country : ""}`;
+    placeInput.value = display;
+
+    state.name = `${it.name}${it.admin1 ? ", " + it.admin1 : ""}`;
+    state.country = it.country || "";
+    state.lat = it.latitude;
+    state.lon = it.longitude;
+    state.timezone = it.timezone || "auto";
+
+    localStorage.setItem("sigo_last_place", JSON.stringify({
+      name: state.name,
+      country: state.country,
+      lat: state.lat,
+      lon: state.lon,
+      timezone: state.timezone,
+      display
+    }));
+
+    closeSuggestions();
+    fetchForecastAndRender();
+  }
+
+  // Network helpers
+  async function safeJson(url){
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  async function geocodeSearch(query){
+    const url =
+      `${GEO_URL}?name=${encodeURIComponent(query)}&count=7&language=en&format=json`;
+    const data = await safeJson(url);
+    const items = (data && data.results) ? data.results : [];
+    return items;
+  }
+
+  async function reverseGeocode(lat, lon){
+    const url =
+      `${GEO_REV_URL}?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&count=10&language=en&format=json`;
+    const data = await safeJson(url);
+    const items = (data && data.results) ? data.results : [];
+    return items[0] || null;
+  }
+
+  function nicePlaceName(p){
+    const parts = [];
+    if (p?.name) parts.push(p.name);
+    if (p?.admin1) parts.push(p.admin1);
+    return parts.join(", ").trim();
+  }
+
+  async function resolveNearestTown(lat, lon){
+    // 1) Reverse geocode (best)
+    try{
+      const place = await reverseGeocode(lat, lon);
+      if (place?.name) return place;
+    }catch(_e){}
+
+    // 2) Fallback: try searching the coords as text (sometimes returns nearby locality)
+    try{
+      const q = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+      const items = await geocodeSearch(q);
+      if (items && items.length){
+        let best = items[0];
+        let bestD = Infinity;
+
+        for (const it of items){
+          if (it.latitude == null || it.longitude == null) continue;
+          const dLat = (it.latitude - lat);
+          const dLon = (it.longitude - lon);
+          const d = dLat*dLat + dLon*dLon;
+          if (d < bestD){
+            bestD = d;
+            best = it;
+          }
+        }
+        return best;
+      }
+    }catch(_e){}
+
+    // 3) Give up gracefully
+    return null;
+  }
+
+  async function reverseGeocodeBDC(lat, lon){
+    const url =
+      `${BDC_REV_URL}?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;
+
+    const data = await safeJson(url);
+
+    // BigDataCloud fields (common):
+    // data.locality, data.city, data.principalSubdivision, data.countryName
+    const name = (data.locality || data.city || data.localityInfo?.administrative?.[0]?.name || "").trim();
+    const admin1 = (data.principalSubdivision || "").trim();
+    const country = (data.countryName || "").trim();
+
+    if (!name && !admin1 && !country) return null;
+
+    // Return in a shape similar to Open-Meteo results so the rest of your code works
     return {
-      name: [r.name, r.admin1, r.country].filter(Boolean).join(", "),
-      lat: r.latitude,
-      lon: r.longitude,
-      country: r.country || ""
+      name: name || admin1 || "Unknown area",
+      admin1: admin1 || "",
+      country: country || "",
+      latitude: lat,
+      longitude: lon,
+      timezone: "auto",
     };
   }
 
-  async function fetchForecast(lat, lon){
-    // Daily: max/min temp, precip prob, wind max, uv max
-    // Hourly: temp, precip prob, wind speed, humidity, uv index
+
+  
+  function buildForecastUrl(){
+    const dailyFields = [
+      "temperature_2m_max",
+      "temperature_2m_min",
+      "precipitation_probability_max",
+      "wind_speed_10m_max",
+      "relative_humidity_2m_max",
+      "uv_index_max",
+    ].join(",");
+
+    const hourlyFields = [
+      "temperature_2m",
+      "precipitation_probability",
+      "wind_speed_10m",
+      "uv_index",
+      "relative_humidity_2m",
+    ].join(",");
+
     const params = new URLSearchParams({
-      latitude: String(lat),
-      longitude: String(lon),
+      latitude: String(state.lat),
+      longitude: String(state.lon),
+
+      // Always request 7 days
+      forecast_days: "7",
+
+      // fields
+      daily: dailyFields,
+      hourly: hourlyFields,
+
+      // IMPORTANT: let Open-Meteo decide tz for the lat/lon and return it
       timezone: "auto",
-      daily: [
-        "temperature_2m_max",
-        "temperature_2m_min",
-        "precipitation_probability_max",
-        "wind_speed_10m_max",
-        "uv_index_max"
-      ].join(","),
-      hourly: [
-        "temperature_2m",
-        "precipitation_probability",
-        "wind_speed_10m",
-        "relative_humidity_2m",
-        "uv_index"
-      ].join(",")
+
+      // nice extras
+      wind_speed_unit: "kmh",
+      temperature_unit: "celsius",
     });
 
-    const url = `${FORECAST_URL}?${params.toString()}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Forecast failed");
-    const raw = await res.json();
+    return `${FORECAST_URL}?${params.toString()}`;
+  }
 
-    const daily = raw.daily.time.map((date, i) => ({
-      date,
-      tmax: raw.daily.temperature_2m_max[i],
-      tmin: raw.daily.temperature_2m_min[i],
-      precipProb: raw.daily.precipitation_probability_max[i],
-      windMax: raw.daily.wind_speed_10m_max[i],
-      uvMax: raw.daily.uv_index_max[i],
+  function normalizeForecast(raw){
+    const d = raw?.daily || {};
+    const days = (d.time || []).map((dateStr, i) => ({
+      date: dateStr,
+      tmax: d.temperature_2m_max?.[i],
+      tmin: d.temperature_2m_min?.[i],
+      precipProb: d.precipitation_probability_max?.[i],
+      windMax: d.wind_speed_10m_max?.[i],
+      humidityMax: d.relative_humidity_2m_max?.[i],
+      uvMax: d.uv_index_max?.[i],
     }));
 
-    const hourly = raw.hourly;
-
-    const bestWindowsByDate = computeBestWindowsForWeek(daily, hourly);
-    const uniqueQuipsByDate = buildUniqueQuipsForWeek(daily);
-
-    return { raw, daily, hourly, bestWindowsByDate, uniqueQuipsByDate };
+    return {
+      timezone: raw?.timezone || "auto",
+      daily: days,
+      hourly: raw?.hourly || null,
+    };
   }
 
-  // ---------------------------
-  // Derived metrics
-  // ---------------------------
-  function daytimeHourlyIndexesForDate(dateStr, hourly){
-    const idxs = [];
+  function getCurrentFromHourly(hourly, tz){
+    if (!hourly?.time?.length) return null;
+
     const times = hourly.time;
+
+    // "now" in the forecast timezone (so it doesn't drift)
+    const now = new Date();
+    const nowISO = new Date(now.toLocaleString("en-US", { timeZone: tz || undefined }));
+
+    // find nearest hour index
+    let bestIdx = 0;
+    let bestDiff = Infinity;
+
     for (let i = 0; i < times.length; i++){
-      if (!times[i].startsWith(dateStr)) continue;
-      const h = new Date(times[i]).getHours();
-      // daytime-ish
-      if (h >= 7 && h <= 19) idxs.push(i);
+      const t = new Date(times[i]);
+      const diff = Math.abs(t.getTime() - nowISO.getTime());
+      if (diff < bestDiff){
+        bestDiff = diff;
+        bestIdx = i;
+      }
     }
-    return idxs;
+
+    return {
+      temp: hourly.temperature_2m?.[bestIdx] ?? null,
+      wind: hourly.wind_speed_10m?.[bestIdx] ?? null,
+      rain: hourly.precipitation_probability?.[bestIdx] ?? null,
+      humidity: hourly.relative_humidity_2m?.[bestIdx] ?? null,
+      uv: hourly.uv_index?.[bestIdx] ?? null,
+    };
   }
 
-  function avg(arr, idxs){
-    if (!idxs.length) return null;
-    let s = 0;
-    for (const i of idxs) s += arr[i];
-    return s / idxs.length;
+
+  function setAnswer(decision){
+    answerText.textContent = decision;
+    answerText.classList.remove("yes","no","maybe");
+    if (decision === "YES") answerText.classList.add("yes");
+    else if (decision === "NO") answerText.classList.add("no");
+    else answerText.classList.add("maybe");
   }
 
-  function fmtTemp(n){
-    if (n == null || Number.isNaN(n)) return "—";
-    return `${Math.round(n)}°`;
-  }
-
-  function fmtPct(n){
-    if (n == null || Number.isNaN(n)) return "—";
-    return `${Math.round(n)}%`;
-  }
-
-  function fmtWind(n){
-    if (n == null || Number.isNaN(n)) return "—";
-    return `${Math.round(n)} km/h`;
-  }
-
-  // ---------------------------
-  // Render
-  // ---------------------------
   function renderDays(){
-    const daily = state.forecast.daily;
-    daysRow.innerHTML = "";
+    const tz = state.timezone && state.timezone !== "auto" ? state.timezone : undefined;
+    const daily = state.forecast?.daily || [];
 
-    daily.forEach((d, idx) => {
-      const card = document.createElement("div");
-      card.className = "dayCard" + (idx === state.selectedIndex ? " active" : "");
-
-      const isToday = idx === 0;
+    daysRow.innerHTML = daily.map((d, idx) => {
       const emoji = dominantWeatherEmoji(d);
-      const dow = isToday ? "Today" : fmtDay(d.date);
+      const active = idx === state.selectedIndex ? "active" : "";
+      const rain = d.precipProb == null ? "—" : `${Math.round(d.precipProb)}%`;
+      const hi = d.tmax == null ? "—" : `${Math.round(d.tmax)}°`;
+      const isToday = idx === 0;
+      const nowTemp = (isToday && state.current?.temp != null) ? `${Math.round(state.current.temp)}°` : null;
+      const nowWind = (isToday && state.current?.wind != null) ? `${Math.round(state.current.wind)} km/h` : null;
 
-      card.innerHTML = `
-        <div class="dayTop">
-          <div class="dow">${dow}</div>
-          <div class="emoji" aria-hidden="true">${emoji}</div>
+      return `
+        <div class="dayCard ${active}" data-idx="${idx}" role="button" tabindex="0" aria-label="Select ${escapeHtml(d.date)}">
+          <div class="dayTop">
+            <div>
+              <div class="dow">${escapeHtml(fmtDay(d.date, tz))}</div>
+              <div class="mini"><span>${escapeHtml(fmtShort(d.date, tz))}</span></div>
+            </div>
+            <div class="emoji" aria-hidden="true">${emoji}</div>
+          </div>
+          <div class="mini"><span>🌡️</span><strong>${hi}</strong></div>
+          <div class="mini"><span>☔</span><strong>${rain}</strong></div>
+
         </div>
-        <div class="mini"><span>Rain</span><strong>${fmtPct(d.precipProb)}</strong></div>
-        <div class="mini"><span>High</span><strong>${fmtTemp(d.tmax)}</strong></div>
       `;
+    }).join("");
 
-      card.addEventListener("click", () => {
+    daysRow.querySelectorAll(".dayCard").forEach(card => {
+      const pick = () => {
+        const idx = Number(card.getAttribute("data-idx"));
+        if (!Number.isFinite(idx)) return;
         state.selectedIndex = idx;
-        renderAll();
+        renderSelectedDay();
+      };
+      card.addEventListener("click", pick);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); }
       });
-
-      daysRow.appendChild(card);
     });
   }
 
-  function setAnswerBadge(decision){
-    answerText.classList.remove("yes","no","maybe");
-    if (decision === "YES"){
-      answerText.textContent = "YES";
-      answerText.classList.add("yes");
-    } else if (decision === "NO"){
-      answerText.textContent = "NO";
-      answerText.classList.add("no");
+  function renderSelectedDay(){
+    const f = state.forecast;
+    if (!f?.daily?.length) return;
+
+    // keep selection safe
+    state.selectedIndex = clamp(state.selectedIndex, 0, f.daily.length - 1);
+
+    const day = f.daily[state.selectedIndex];
+    const tz = state.timezone && state.timezone !== "auto" ? state.timezone : undefined;
+    // ✅ Current conditions: only show when selected day is Today (index 0)
+    if (state.selectedIndex === 0 && state.current){
+      const t = state.current.temp != null ? `${Math.round(state.current.temp)}°` : "—";
+      const w = state.current.wind != null ? `${Math.round(state.current.wind)} km/h` : "—";
+      const r = state.current.rain != null ? `${Math.round(state.current.rain)}%` : "—";
+      const u = (state.current.uv != null && !state.isNight) ? `${Math.round(state.current.uv)}` : "—";
+
+      currentVal.textContent = `Temp ${t} • Wind ${w} • Rain ${r} • UV ${u}`;
+      currentMetric.style.display = "";
     } else {
-      answerText.textContent = "MAYBE";
-      answerText.classList.add("maybe");
+      currentMetric.style.display = "none";
     }
-  }
+    selectedChip.textContent = `Selected: ${state.selectedIndex === 0 ? "Today" : fmtShort(day.date, tz)}`;
 
-  function renderSelected(){
-    const day = state.forecast.daily[state.selectedIndex];
-    timeChip.textContent = `🗓️ ${fmtShort(day.date)}`;
-    const { decision, score } = decisionEngine(day);
-    setAnswerBadge(decision);
+    // decision
+    computeNightFlag();
+    applyTheme();
 
-    // Unique quip per day
-    const quip = state.forecast.uniqueQuipsByDate.get(day.date) || "Weather is happening. React accordingly.";
+    const { decision, score, reasons } = decisionEngine(day);
+    setAnswer(decision);
+
+    // stable per-day quip (doesn't change on refresh)
+    const quip = state.quipsByDate.get(day.date) || pickByDay(QUIPS.normal.meh, day.date);
     quipText.textContent = quip;
 
-    selectedChip.textContent = `Selected: ${state.selectedIndex === 0 ? "Today" : fmtDay(day.date)}`;
+    // reasons
+    reasonText.innerHTML = reasons.length ? escapeHtml(reasons.join(" ")) : "&nbsp;";
 
-    // Hourly-derived averages
-    const idxs = daytimeHourlyIndexesForDate(day.date, state.forecast.hourly);
-    const avgHumidity = avg(state.forecast.hourly.relative_humidity_2m, idxs);
-    const avgWind = avg(state.forecast.hourly.wind_speed_10m, idxs);
 
-    humidityVal.textContent = avgHumidity == null ? "—" : fmtPct(avgHumidity);
-    windVal.textContent = day.windMax == null ? (avgWind == null ? "—" : fmtWind(avgWind)) : fmtWind(day.windMax);
+    // metrics
+    humidityVal.textContent = (day.humidityMax == null) ? "—" : `${Math.round(day.humidityMax)}%`;
+    windVal.textContent = (day.windMax == null) ? "—" : `${Math.round(day.windMax)} km/h`;
+    rainVal.textContent = (day.precipProb == null) ? "—" : `${Math.round(day.precipProb)}%`;
+    tempVal.textContent = (day.tmax == null || day.tmin == null)
+      ? "—"
+      : `${Math.round(day.tmax)}° / ${Math.round(day.tmin)}°`;
+    uvVal.textContent = (day.uvMax == null) ? "—" : `${uvLabel(day.uvMax)} (${Math.round(day.uvMax)})`;
 
-    rainVal.textContent = fmtPct(day.precipProb);
-
-    // Temp range now: High / Low
-    tempVal.textContent = `High: ${fmtTemp(day.tmax)}  •  Low: ${fmtTemp(day.tmin)}`;
-
-    const uv = day.uvMax;
-    uvVal.textContent = uv == null ? "—" : `${uvLabel(uv)} (UV ${Math.round(uv)})`;
-
-    // Best time for ANY selected day
-    const best = state.forecast.bestWindowsByDate.get(day.date) || "—";
+    // best window (precomputed per day)
+    const best = state.bestWindowByDate.get(day.date) || "—";
     bestTimeVal.textContent = best;
 
-    // Survival guide + activities + motivation
-    renderGuideExtras(day, decision);
-
-    // “Score” summary on the right
+    // little extra summary on the right
     extraSummary.textContent = `Score: ${Math.round(score)}/100`;
 
-    // Fun savings blurb varies by decision
-    if (decision === "YES"){
-      moneyNote.textContent = "🌿 Choosing outside might save ~$1.50 and 2kg CO₂ (scientific vibes, not science).";
-    } else if (decision === "MAYBE"){
-      moneyNote.textContent = "🌿 Outside is possible… but bring a backup plan (and snacks).";
+    // “money note” vibe
+    if (decision === "YES") {
+      moneyNote.textContent = "🌿 Yes: go outside and pretend you’re a healthy person. (Scientific vibes, not science.)";
+    } else if (decision === "NO") {
+      moneyNote.textContent = "🛋️ No: indoors is a valid lifestyle choice today. (Scientific vibes, not science.)";
     } else {
-      moneyNote.textContent = "🌿 Staying inside might save your outfit and your will to live. Respect.";
+      moneyNote.textContent = "🤝 Maybe: do a short mission outside, then retreat like a tactical genius.";
     }
-  }
 
-  function renderAll(){
-    if (!state.forecast) return;
+    // guide (clothing includes shorts > 25°C ✅)
+    renderGuideExtras(day, decision);
+
+    // re-render active day highlight
     renderDays();
-    renderSelected();
-    applyTheme();
   }
 
-  // ---------------------------
-  // Search / location actions
-  // ---------------------------
-  async function setLocationAndLoad({ name, lat, lon, country }){
-    state.name = name;
-    state.lat = lat;
-    state.lon = lon;
-    state.country = country || "";
-    state.selectedIndex = 0;
+  function updateMetaChips(){
+    const tz = state.timezone && state.timezone !== "auto" ? state.timezone : undefined;
 
-    locationChip.textContent = `📍 ${name}`;
-    timeChip.textContent = `🗓️ ${fmtShort(new Date().toISOString().slice(0,10))}`;
+    // IMPORTANT: show a stable “now” with timezone when possible
+    const now = new Date();
+    const timeStr = now.toLocaleString(undefined, {
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: tz,
+    });
 
-    // Persist location
-    localStorage.setItem("sigo_lastPlace", JSON.stringify({ name, lat, lon, country }));
-
-    quipText.textContent = "Consulting the sky’s HR department…";
-    answerText.textContent = "…";
-    answerText.classList.remove("yes","no","maybe");
-
-    const forecast = await fetchForecast(lat, lon);
-    state.forecast = forecast;
-
-    renderAll();
+    timeChip.textContent = `⏱️ ${timeStr}`;
+    locationChip.textContent = `📍 ${state.name}${state.country ? ", " + state.country : ""}`;
   }
 
-  async function onSearch(){
-    const q = (placeInput.value || "").trim();
-    if (!q) return;
+  async function fetchForecastAndRender(){
+    if (state.lat == null || state.lon == null) return;
+
+    quipText.textContent = "Fetching forecast…";
+    reasonText.textContent = "";
+    locationChip.textContent = `📍 ${state.name || "Loading…"}`;
 
     try{
-        const place = await geocodePlace(q);
-        if (!place){
-        alert("Couldn’t find that place. Try a suburb/city + state/country.");
-        return;
-        }
-        await setLocationAndLoad(place);
-    } catch (e){
-        console.error(e);
-        alert("Search failed. Try again in a moment.");
-    }
-    }
+      const url = buildForecastUrl();
+      const raw = await safeJson(url);
+      state.forecast = normalizeForecast(raw);
+
+      // lock timezone to forecast timezone so day labels don’t “shift”
+      if (state.forecast.timezone) state.timezone = state.forecast.timezone;
+      state.current = getCurrentFromHourly(state.forecast.hourly, state.timezone);
 
 
-  async function onUseMyLocation(){
-    if (!navigator.geolocation){
+      // build stable quips + best windows for the entire week
+      state.quipsByDate = buildUniqueQuipsForWeek(state.forecast.daily);
+      state.bestWindowByDate = computeBestWindowsForWeek(state.forecast.daily, state.forecast.hourly, state.timezone);
+
+      updateMetaChips();
+      applyTheme();
+      renderDays();
+      renderSelectedDay();
+    }catch(err){
+      setAnswer("MAYBE");
+      quipText.textContent = "Couldn’t load weather. The internet is having feelings.";
+      reasonText.textContent = "Try again, or search a nearby town/suburb.";
+      console.error(err);
+    }
+  }
+
+  // ---------------------------
+  // Location: “Use my location”
+  // ---------------------------
+  async function useMyLocationGPS(){
+    if (!("geolocation" in navigator)){
       alert("Geolocation not supported in this browser.");
       return;
     }
 
     useMeBtn.disabled = true;
-    useMeBtn.textContent = "Locating…";
+    useMeBtn.classList.add("loading");
 
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      try{
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-
-        // Reverse “name”: use a quick Open-Meteo geocode trick by searching nearby
-        // (No official reverse endpoint here, so we label as Near you)
-        await setLocationAndLoad({
-          name: `Near you (${lat.toFixed(2)}, ${lon.toFixed(2)})`,
-          lat, lon, country: ""
+    try{
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 30000,
         });
-      } catch (e){
-        console.error(e);
-        alert("Couldn’t load weather for your location.");
-      } finally {
-        useMeBtn.disabled = false;
-        useMeBtn.textContent = "Use my location";
+      });
+
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      // Always set coords first so forecast works even if name lookup fails
+      state.lat = lat;
+      state.lon = lon;
+      state.timezone = "auto";
+
+      // Temporary UI while we try to get a name
+      const fallbackName = `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+      state.name = fallbackName;
+      state.country = "";
+
+      // ✅ Resolve nearest town/suburb for these GPS coords (with fallback)
+      try{
+        // 1) Try Open-Meteo reverse first
+        let place = await resolveNearestTown(lat, lon);
+
+        // 2) If that fails, try BigDataCloud
+        if (!place?.name){
+          place = await reverseGeocodeBDC(lat, lon);
+        }
+
+        if (place?.name){
+          state.name = nicePlaceName(place) || place.name;
+          state.country = place.country || "";
+          state.timezone = place.timezone || "auto";
+        } else {
+          // Keep GPS fallback
+          state.name = fallbackName;
+          state.country = "";
+          state.timezone = "auto";
+        }
+      } catch (_err){
+        // Keep GPS fallback
+        state.name = fallbackName;
+        state.country = "";
+        state.timezone = "auto";
       }
-    }, (err) => {
-      console.error(err);
-      alert("Location permission denied (or unavailable). You can still search a place.");
+
+
+
+      // Update input + persist
+      const display =
+      state.country
+        ? `${state.name}, ${state.country}`
+        : (state.name.includes(",") ? `Near ${state.name}` : `GPS: ${state.name}`);
+
+
+      placeInput.value = display;
+
+      localStorage.setItem("sigo_last_place", JSON.stringify({
+        name: state.name,
+        country: state.country,
+        lat: state.lat,
+        lon: state.lon,
+        timezone: state.timezone,
+        display
+      }));
+
+      // Now fetch weather using coords no matter what
+      await fetchForecastAndRender();
+
+    } catch (err){
+      // Common geolocation errors:
+      // 1 = permission denied, 2 = position unavailable, 3 = timeout
+      const code = err?.code;
+      const msg =
+        code === 1 ? "Location permission denied."
+        : code === 2 ? "Position unavailable."
+        : code === 3 ? "Location request timed out."
+        : "Could not get your location.";
+
+      alert(msg);
+    } finally{
       useMeBtn.disabled = false;
-      useMeBtn.textContent = "Use my location";
-    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 });
+      useMeBtn.classList.remove("loading");
+    }
+  }
+  
+
+
+  // ---------------------------
+  // Search suggestions
+  // ---------------------------
+  let searchTimer = null;
+
+  async function runSuggest(){
+    const q = placeInput.value.trim();
+    if (q.length < 2){
+      closeSuggestions();
+      return;
+    }
+    try{
+      const items = await geocodeSearch(q);
+      renderSuggestions(items);
+    }catch(e){
+      console.error(e);
+      closeSuggestions();
+    }
+  }
+
+  function commitEnterSearch(){
+    // If user has a highlighted suggestion -> choose it
+    if (state.suggestionOpen && state.suggestionActiveIndex >= 0){
+      chooseSuggestion(state.suggestionActiveIndex);
+      return;
+    }
+
+    // Otherwise: geocode the typed query and pick first result
+    const q = placeInput.value.trim();
+    if (!q) return;
+
+    (async () => {
+      try{
+        const items = await geocodeSearch(q);
+        if (items && items.length){
+          renderSuggestions(items);
+          chooseSuggestion(0);
+        } else {
+          alert("No results. Try a bigger place name (e.g., 'Sunbury, Victoria').");
+        }
+      }catch(e){
+        console.error(e);
+        alert("Search failed. Check your connection and try again.");
+      }
+    })();
+  }
+
+  function onInputKeyDown(e){
+    if (!state.suggestionOpen){
+      if (e.key === "Enter") commitEnterSearch();
+      return;
+    }
+
+    const max = state.suggestionItems.length - 1;
+
+    if (e.key === "ArrowDown"){
+      e.preventDefault();
+      state.suggestionActiveIndex = clamp(state.suggestionActiveIndex + 1, 0, max);
+      highlightSuggestion();
+      return;
+    }
+    if (e.key === "ArrowUp"){
+      e.preventDefault();
+      state.suggestionActiveIndex = clamp(state.suggestionActiveIndex - 1, -1, max);
+      highlightSuggestion();
+      return;
+    }
+    if (e.key === "Escape"){
+      closeSuggestions();
+      return;
+    }
+    if (e.key === "Enter"){
+      e.preventDefault();
+      commitEnterSearch();
+      return;
+    }
+  }
+
+  // ---------------------------
+  // Sass + theme
+  // ---------------------------
+  function toggleSass(){
+    state.extraSass = !state.extraSass;
+    sassBtn.textContent = state.extraSass ? "✨ Extra Sass: On" : "✨ Extra Sass: Off";
+    localStorage.setItem("sigo_extraSass", state.extraSass ? "1" : "0");
+
+    // rebuild quips for current week so it updates immediately but stays stable
+    if (state.forecast?.daily?.length){
+      state.quipsByDate = buildUniqueQuipsForWeek(state.forecast.daily);
+      renderSelectedDay();
+    }
   }
 
   // ---------------------------
@@ -1739,7 +2096,6 @@
   // ---------------------------
   function loadPrefs(){
     state.extraSass = localStorage.getItem("sigo_extraSass") === "1";
-    sassBtn.classList.toggle("on", state.extraSass);
     sassBtn.textContent = state.extraSass ? "✨ Extra Sass: On" : "✨ Extra Sass: Off";
 
     state.themeMode = localStorage.getItem("sigo_themeMode") || "auto";
@@ -1748,44 +2104,76 @@
       : "🎨 Theme: Dark";
   }
 
-  async function init(){
-    computeNightFlag();
-    loadPrefs();
-    applyTheme();
-
-    // Wire actions
-    placeInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") onSearch();
-    });
-
-    useMeBtn.addEventListener("click", onUseMyLocation);
-    sassBtn.addEventListener("click", toggleSass);
-    themeBtn.addEventListener("click", cycleTheme);
-
-    // Load last place if any; else default
-    const saved = localStorage.getItem("sigo_lastPlace");
-    if (saved){
-      try{
-        const place = JSON.parse(saved);
-        if (place && typeof place.lat === "number" && typeof place.lon === "number"){
-          placeInput.value = place.name || "";
-          await setLocationAndLoad(place);
-          return;
-        }
-      } catch {}
-    }
-
-    // Default: Melbourne, AU (friendly starter)
-    placeInput.value = "Melbourne, Australia";
-    await setLocationAndLoad({
-      name: "Melbourne, Australia",
-      lat: -37.8136,
-      lon: 144.9631,
-      country: "Australia"
-    });
+  function loadLastPlace(){
+    const raw = localStorage.getItem("sigo_last_place");
+    if (!raw) return false;
+    try{
+      const p = JSON.parse(raw);
+      if (p && typeof p.lat === "number" && typeof p.lon === "number"){
+        state.name = p.name || "Saved place";
+        state.country = p.country || "";
+        state.lat = p.lat;
+        state.lon = p.lon;
+        state.timezone = p.timezone || "auto";
+        placeInput.value = p.display || `${state.name}${state.country ? ", " + state.country : ""}`;
+        return true;
+      }
+    }catch(_){}
+    return false;
   }
 
-  init();
+  // ---------------------------
+  // Wire up UI events
+  // ---------------------------
+  tabDashboard.addEventListener("click", () => setTab("dashboard"));
+  tabAbout.addEventListener("click", () => setTab("about"));
+
+  sassBtn.addEventListener("click", toggleSass);
+  themeBtn.addEventListener("click", cycleTheme);
+
+  useMeBtn.addEventListener("click", () => {
+      useMyLocationGPS();
+    });
+
+  placeInput.addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(runSuggest, 220);
+  });
+
+  placeInput.addEventListener("keydown", onInputKeyDown);
+
+  document.addEventListener("click", (e) => {
+    // click outside suggestions -> close
+    if (!suggestionsEl.contains(e.target) && e.target !== placeInput){
+      closeSuggestions();
+    }
+  });
+
+  // keep time chip updated without changing “day selection”
+  setInterval(() => {
+    if (state.lat != null) updateMetaChips();
+  }, 30_000);
+
+  // Start
+  computeNightFlag();
+  loadPrefs();
+  applyTheme();
+
+  const hadLast = loadLastPlace();
+  if (hadLast){
+    updateMetaChips();
+    fetchForecastAndRender();
+  } else {
+    // No saved place: don’t auto-prompt geolocation; show hint.
+    locationChip.textContent = state.country
+      ? `📍 ${state.name}, ${state.country}`
+      : `📍 GPS: ${state.name}`;
+
+    timeChip.textContent = "⏱️ —";
+    quipText.textContent = "Search a suburb/city to begin…";
+  }
+})();
 </script>
+
 </body>
 </html>
