@@ -68,6 +68,26 @@
       --okGlow: rgba(25,195,125,.22);
       --tabBg: rgba(18,24,44,.42);
     }
+    .unitBtn{
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.9);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+      user-select: none;
+      white-space: nowrap;
+    }
+
+body[data-theme="dark"] .unitBtn{
+  background: rgba(18,24,44,.88);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
+.unitBtn:hover{ opacity: .95; }
+.unitBtn:active{ transform: translateY(1px); }
 
     *{box-sizing:border-box}
     body{
@@ -632,10 +652,11 @@
             </div>
 
             <div class="metaRow">
+              <button class="unitBtn" id="unitBtn" type="button" title="Toggle °C / °F">🌡️ °C</button>
               <div class="chip" id="timeChip">⏱️ —</div>
               <div class="chip" id="locationChip">📍 Finding you…</div>
             </div>
-          </div>
+
 
           <div class="forecastTitle">
             <div>7-day outlook (click a day)</div>
@@ -810,6 +831,8 @@
   const tabAbout = document.getElementById("tabAbout");
   const pageDashboard = document.getElementById("pageDashboard");
   const pageAbout = document.getElementById("pageAbout");
+  const unitBtn = document.getElementById("unitBtn");
+
 
   const placeInput = document.getElementById("placeInput");
   const useMeBtn = document.getElementById("useMeBtn");
@@ -859,6 +882,8 @@
     extraSass: false,
     themeMode: "auto",
     isNight: false,
+    tempUnit: "C", // "C" or "F"
+
 
     // suggestions
     suggestionItems: [],
@@ -871,6 +896,20 @@
   };
 
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+
+  function cToF(c){ return (c * 9/5) + 32; }
+
+  function fmtTemp(c){
+    if (c == null) return "—";
+    const v = (state.tempUnit === "F") ? cToF(c) : c;
+    return `${Math.round(v)}°${state.tempUnit}`;
+  }
+
+  function setUnitButtonLabel(){
+    if (!unitBtn) return;
+    unitBtn.textContent = state.tempUnit === "F" ? "🌡️ °F" : "🌡️ °C";
+  }
+
 
   function escapeHtml(str){
     return String(str ?? "")
@@ -1169,8 +1208,9 @@
     if (windBad) add(`Wind is strong (${Math.round(wind)} km/h).`);
     else if (windMeh) add(`Breezy winds (${Math.round(wind)} km/h).`);
 
-    if (tempBad) add(`Temps look uncomfortable (High ${Math.round(tmax)}°, Low ${Math.round(tmin)}°).`);
-    else if (tempMeh) add(`Temps are a bit meh (High ${Math.round(tmax)}°, Low ${Math.round(tmin)}°).`);
+    if (tempBad) add(`Temps look uncomfortable (High ${fmtTemp(tmax)}, Low ${fmtTemp(tmin)}).`);
+    else if (tempMeh) add(`Temps are a bit meh (High ${fmtTemp(tmax)}, Low ${fmtTemp(tmin)}).`);
+
 
     if (!state.isNight){
       if (uvBad) add(`UV is extreme (${Math.round(uv)}).`);
@@ -1762,7 +1802,7 @@
       const emoji = dominantWeatherEmoji(d);
       const active = idx === state.selectedIndex ? "active" : "";
       const rain = d.precipProb == null ? "—" : `${Math.round(d.precipProb)}%`;
-      const hi = d.tmax == null ? "—" : `${Math.round(d.tmax)}°`;
+      const hi = fmtTemp(d.tmax);
       const isToday = idx === 0;
       const nowTemp = (isToday && state.current?.temp != null) ? `${Math.round(state.current.temp)}°` : null;
       const nowWind = (isToday && state.current?.wind != null) ? `${Math.round(state.current.wind)} km/h` : null;
@@ -1808,7 +1848,7 @@
     const tz = state.timezone && state.timezone !== "auto" ? state.timezone : undefined;
     // ✅ Current conditions: only show when selected day is Today (index 0)
     if (state.selectedIndex === 0 && state.current){
-      const t = state.current.temp != null ? `${Math.round(state.current.temp)}°` : "—";
+      const t = state.current.temp != null ? fmtTemp(state.current.temp) : "—";
       const w = state.current.wind != null ? `${Math.round(state.current.wind)} km/h` : "—";
       const r = state.current.rain != null ? `${Math.round(state.current.rain)}%` : "—";
       const u = (state.current.uv != null && !state.isNight) ? `${Math.round(state.current.uv)}` : "—";
@@ -1841,7 +1881,8 @@
     rainVal.textContent = (day.precipProb == null) ? "—" : `${Math.round(day.precipProb)}%`;
     tempVal.textContent = (day.tmax == null || day.tmin == null)
       ? "—"
-      : `${Math.round(day.tmax)}° / ${Math.round(day.tmin)}°`;
+      : `${fmtTemp(day.tmax)} / ${fmtTemp(day.tmin)}`;
+
     uvVal.textContent = (day.uvMax == null) ? "—" : `${uvLabel(day.uvMax)} (${Math.round(day.uvMax)})`;
 
     // best window (precomputed per day)
@@ -2097,6 +2138,18 @@
     }
   }
 
+  function toggleTempUnit(){
+    state.tempUnit = (state.tempUnit === "C") ? "F" : "C";
+    localStorage.setItem("sigo_tempUnit", state.tempUnit);
+    setUnitButtonLabel();
+
+    // Re-render everything that shows temps
+    if (state.forecast?.daily?.length){
+      renderSelectedDay();
+    }
+  }
+
+
   // ---------------------------
   // Sass + theme
   // ---------------------------
@@ -2123,6 +2176,10 @@
     themeBtn.textContent = state.themeMode === "auto" ? "🎨 Theme: Auto"
       : state.themeMode === "light" ? "🎨 Theme: Light"
       : "🎨 Theme: Dark";
+
+      state.tempUnit = localStorage.getItem("sigo_tempUnit") || "C";
+      setUnitButtonLabel();
+
   }
 
   function loadLastPlace(){
@@ -2151,6 +2208,8 @@
 
   sassBtn.addEventListener("click", toggleSass);
   themeBtn.addEventListener("click", cycleTheme);
+  unitBtn?.addEventListener("click", toggleTempUnit);
+
 
   useMeBtn.addEventListener("click", () => {
       useMyLocationGPS();
