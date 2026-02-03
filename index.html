@@ -591,10 +591,199 @@
     @media (max-width: 760px){ .twoCards{ grid-template-columns: 1fr; } }
     .ctaRow{ display:flex; gap:12px; flex-wrap:wrap; margin-top: 14px; }
     a.link{ color: inherit; }
+
+    /* ---------- Weather preferences ---------- */
+.prefRow{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top: 8px;
+}
+
+.prefLine{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap:10px;
+  align-items:center;
+}
+
+.prefLabel{
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing:.06em;
+  text-transform: uppercase;
+}
+
+.prefValue{
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--chip);
+  border: 1px solid rgba(255,255,255,.06);
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ---------- Single range sliders (Rain/Wind) styled like temp ---------- */
+.prefSlider{
+  width: 100%;
+  height: 34px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  --pct: 0%;
+}
+
+/* Track (filled left -> grey right) */
+.prefSlider::-webkit-slider-runnable-track{
+  height: 8px;
+  border-radius: 999px;
+  background:
+    linear-gradient(to right,
+      rgba(78,134,255,.95) 0 var(--pct),
+      rgba(255,255,255,.14) var(--pct) 100%);
+  border: 1px solid rgba(255,255,255,.10);
+}
+body[data-theme="light"] .prefSlider::-webkit-slider-runnable-track{
+  background:
+    linear-gradient(to right,
+      rgba(78,134,255,.95) 0 var(--pct),
+      rgba(16,17,20,.10) var(--pct) 100%);
+  border-color: rgba(16,17,20,.10);
+}
+
+/* Thumb */
+.prefSlider::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+   background: #ffffff;
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(78,134,255,.95);
+  margin-top: -5px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+
+/* Firefox */
+.prefSlider::-moz-range-track{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.10);
+}
+body[data-theme="light"] .prefSlider::-moz-range-track{
+  background: rgba(16,17,20,.10);
+  border-color: rgba(16,17,20,.10);
+}
+.prefSlider::-moz-range-progress{
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(78,134,255,.95);
+}
+.prefSlider::-moz-range-thumb{
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(78,134,255,.95);
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+
+
+/* --- Dual range: only fill between min & max --- */
+.dualRange{
+  position: relative;
+  width: 100%;
+  height: 34px;
+  margin-top: 6px;
+  display: grid;
+  align-items: center;
+}
+
+.rangeRail{
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.10);
+}
+
+body[data-theme="light"] .rangeRail{
+  background: rgba(16,17,20,.10);
+  border-color: rgba(16,17,20,.10);
+}
+
+.rangeFill{
+  position: absolute;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(78,134,255,.95);
+  left: 0%;
+  width: 0%;
+  pointer-events: none;
+  box-shadow: 0 10px 24px rgba(78,134,255,.20);
+}
+
+/* Put sliders on top */
+.rangeInput{
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  margin: 0;
+  height: 34px;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Make tracks transparent so the browser fill disappears */
+.rangeInput::-webkit-slider-runnable-track{
+  height: 8px;
+  background: transparent;
+}
+.rangeInput::-moz-range-track{
+  height: 8px;
+  background: transparent;
+}
+
+/* Thumbs */
+.rangeInput::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(78,134,255,.95);
+  margin-top: -5px;
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+.rangeInput::-moz-range-thumb{
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.92);
+  border: 2px solid rgba(78,134,255,.95);
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+
+
+
   </style>
 </head>
 
-<body data-theme="light">
+
+
+<body data-theme="dark">
   <div class="wrap">
     <header>
       <div class="brand">
@@ -713,6 +902,45 @@
           </div>
 
           <div class="list">
+            
+            
+            <div class="tip" id="prefsCard">
+              <b>⚙️ Weather preferences</b>
+              <p class="small">Adjust the sliders to your preferences</p>
+
+              <div class="prefRow">
+                
+              <!-- Temperature (min + max) -->
+                <div class="prefLine">
+                  <div class="prefLabel">Ideal temperature range</div>
+                  <div class="prefValue" id="tempPrefVal">—</div>
+                </div>
+
+                <div class="dualRange" id="tempDualRange">
+                  <div class="rangeRail"></div>
+                  <div class="rangeFill" id="tempRangeFill"></div>
+
+                  <input class="prefSlider rangeInput" id="tempMinPref" type="range" min="-5" max="40" step="1" value="18" />
+                  <input class="prefSlider rangeInput" id="tempMaxPref" type="range" min="-5" max="40" step="1" value="26" />
+                </div>
+
+
+                <!-- Rain -->
+                <div class="prefLine">
+                  <div class="prefLabel">Max Rain</div>
+                  <div class="prefValue" id="rainPrefVal">—</div>
+                </div>
+                <input class="prefSlider" id="rainPref" type="range" min="0" max="100" step="1" value="25" />
+
+                <!-- Wind -->
+                <div class="prefLine">
+                  <div class="prefLabel">Max Wind</div>
+                  <div class="prefValue" id="windPrefVal">—</div>
+                </div>
+                <input class="prefSlider" id="windPref" type="range" min="0" max="60" step="1" value="25" />
+              </div>
+            </div>
+
             <div class="tip">
               <b>🧢 What to wear (Male)</b>
               <p id="maleOutfitText">—</p>
@@ -723,10 +951,6 @@
               <p id="femaleOutfitText">—</p>
             </div>
 
-            <div class="tip">
-              <b>🧠 Survival tip</b>
-              <p id="survivalTipText">—</p>
-            </div>
 
             <div class="tip">
               <b>🏃 Ideas (Outside)</b>
@@ -753,7 +977,7 @@
       </main>
 
       <div class="footerBar">
-        Built for fun. Don’t fight lightning with confidence.
+        © <span id="yearNow"></span> — Luke Baldacchino - Tera Apps. Weather data by Open-Meteo.
       </div>
     </section>
 
@@ -816,7 +1040,7 @@
       </div>
 
       <div class="footerBar">
-        © <span id="yearNow"></span> — Made by you. Weather data by Open-Meteo. Keep it fun.
+        © <span id="yearNow"></span> — Luke Baldacchino - Tera Apps. Weather data by Open-Meteo.
       </div>
     </section>
   </div>
@@ -835,6 +1059,7 @@
   const pageAbout = document.getElementById("pageAbout");
   const unitBtn = document.getElementById("unitBtn");
 
+  
 
   const placeInput = document.getElementById("placeInput");
   const useMeBtn = document.getElementById("useMeBtn");
@@ -862,12 +1087,29 @@
   const extraSummary = document.getElementById("extraSummary");
   const maleOutfitText = document.getElementById("maleOutfitText");
   const femaleOutfitText = document.getElementById("femaleOutfitText");
-  const survivalTipText = document.getElementById("survivalTipText");
   const outsideIdeasText = document.getElementById("outsideIdeasText");
   const insideIdeasText = document.getElementById("insideIdeasText");
   const motivationText = document.getElementById("motivationText");
   const currentMetric = document.getElementById("currentMetric");
   const currentVal = document.getElementById("currentVal");
+
+  
+  const rainPref = document.getElementById("rainPref");
+  const windPref = document.getElementById("windPref");
+  // Temperature range sliders (min + max)
+  const tempMinPref = document.getElementById("tempMinPref");
+  const tempMaxPref = document.getElementById("tempMaxPref");
+  const tempRangeFill = document.getElementById("tempRangeFill");
+  const tempDualRange = document.getElementById("tempDualRange");
+
+
+
+  const tempPrefVal = document.getElementById("tempPrefVal");
+  const rainPrefVal = document.getElementById("rainPrefVal");
+  const windPrefVal = document.getElementById("windPrefVal");
+
+  
+
 
 
   document.getElementById("yearNow").textContent = new Date().getFullYear();
@@ -882,9 +1124,17 @@
     current: null, // { temp, wind, rain, humidity, uv }
     selectedIndex: 0,
     extraSass: false,
-    themeMode: "auto",
+    themeMode: "dark",
     isNight: false,
     tempUnit: "C", // "C" or "F"
+    prefs: {
+      tempMin: 18,
+      tempMax: 30,
+      rainTolerance: 25,
+      windTolerance: 30,
+    },
+
+
 
 
     // suggestions
@@ -1152,22 +1402,231 @@
     return out;
   }
 
+  function tempBandFromPrefs(){
+    const comfortMin = clamp(state.prefs.tempMin, -5, 40);
+    const comfortMax = clamp(state.prefs.tempMax, -5, 40);
+    const coldMin = comfortMin - 8;
+    return { comfortMin, comfortMax, coldMin };
+  }
+
+
+  function computeThresholds(){
+    // Rain:
+    // - rainTolerance is the max precip% for "YES"
+    // - MAYBE band extends +20%
+    const rainYesMax = clamp(state.prefs.rainTolerance, 0, 100);
+    const rainMehMax = clamp(rainYesMax + 20, 0, 100);
+    const rainBadMin = rainMehMax; // "bad" at/above meh max
+
+    // Wind:
+    // - windTolerance is the max wind for "YES"
+    // - MAYBE band extends +12 km/h
+    const windYesMax = clamp(state.prefs.windTolerance, 0, 60);
+    const windMehMax = clamp(windYesMax + 12, 0, 80);
+    const windBadMin = windMehMax;
+
+    // Temp bands:
+    const { comfortMin, comfortMax, coldMin } = tempBandFromPrefs();
+
+
+    return {
+      rainYesMax, rainMehMax, rainBadMin,
+      windYesMax, windMehMax, windBadMin,
+      comfortMin, comfortMax, coldMin,
+    };
+  }
+
+  function renderPrefLabels(){
+    // Temp preference display (store prefs in °C internally, display °F if toggled)
+    if (tempPrefVal){
+      const tMin = state.prefs.tempMin;
+      const tMax = state.prefs.tempMax;
+
+      if (state.tempUnit === "F"){
+        const fMin = Math.round(cToF(tMin));
+        const fMax = Math.round(cToF(tMax));
+        tempPrefVal.textContent = `${fMin}°F – ${fMax}°F`;
+      } else {
+        tempPrefVal.textContent = `${tMin}°C – ${tMax}°C`;
+      }
+    }
+
+    // Rain is always %
+    if (rainPrefVal){
+      rainPrefVal.textContent = `≤ ${state.prefs.rainTolerance}%`;
+    }
+
+    // Wind preference display (store prefs in km/h internally, display mph if toggled)
+    if (windPrefVal){
+      const w = state.prefs.windTolerance;
+
+      if (state.tempUnit === "F"){
+        const mph = Math.round(kmhToMph(w));
+        windPrefVal.textContent = `≤ ${mph} mph`;
+      } else {
+        windPrefVal.textContent = `≤ ${w} km/h`;
+      }
+    }
+  }
+
+
+
+  function savePrefs(){
+    localStorage.setItem("sigo_prefs", JSON.stringify(state.prefs));
+  }
+
+  function loadPrefsFromStorage(){
+    try{
+      const raw = localStorage.getItem("sigo_prefs");
+      if (!raw) return;
+      const p = JSON.parse(raw);
+      if (!p || typeof p !== "object") return;
+
+      if (typeof p.tempMin === "number") state.prefs.tempMin = clamp(p.tempMin, -5, 40);
+      if (typeof p.tempMax === "number") state.prefs.tempMax = clamp(p.tempMax, -5, 40);
+
+      if (typeof p.rainTolerance === "number") state.prefs.rainTolerance = clamp(p.rainTolerance, 0, 100);
+      if (typeof p.windTolerance === "number") state.prefs.windTolerance = clamp(p.windTolerance, 0, 60);
+    }catch(_e){}
+  }
+
+  function setSliderPct(sliderEl){
+    if (!sliderEl) return;
+    const min = Number(sliderEl.min);
+    const max = Number(sliderEl.max);
+    const val = Number(sliderEl.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    sliderEl.style.setProperty("--pct", pct + "%");
+  }
+
+
+  function updateTempRangeFill(){
+    if (!tempMinPref || !tempMaxPref || !tempRangeFill) return;
+
+    const min = Number(tempMinPref.min);
+    const max = Number(tempMinPref.max);
+
+    const a = Number(tempMinPref.value);
+    const b = Number(tempMaxPref.value);
+
+    const lo = Math.min(a, b);
+    const hi = Math.max(a, b);
+
+    const loPct = ((lo - min) / (max - min)) * 100;
+    const hiPct = ((hi - min) / (max - min)) * 100;
+
+    tempRangeFill.style.left = `${loPct}%`;
+    tempRangeFill.style.width = `${hiPct - loPct}%`;
+  }
+  function setTempActiveThumb(which){
+    if (!tempMinPref || !tempMaxPref) return;
+
+    if (which === "min"){
+      tempMinPref.style.zIndex = "5";
+      tempMaxPref.style.zIndex = "4";
+      tempMinPref.style.pointerEvents = "auto";
+      tempMaxPref.style.pointerEvents = "none";
+    } else {
+      tempMaxPref.style.zIndex = "5";
+      tempMinPref.style.zIndex = "4";
+      tempMaxPref.style.pointerEvents = "auto";
+      tempMinPref.style.pointerEvents = "none";
+    }
+  }
+
+  function resetTempThumbPointerEvents(){
+    if (!tempMinPref || !tempMaxPref) return;
+    tempMinPref.style.pointerEvents = "auto";
+    tempMaxPref.style.pointerEvents = "auto";
+  }
+
+  function valueFromPointerEvent(e, inputEl){
+    const rect = tempDualRange.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = clamp(x / rect.width, 0, 1);
+
+    const min = Number(inputEl.min);
+    const max = Number(inputEl.max);
+    const step = Number(inputEl.step) || 1;
+
+    const raw = min + pct * (max - min);
+    return Math.round(raw / step) * step;
+  }
+
+
+  function bringTempThumbToFront(which){
+    if (!tempMinPref || !tempMaxPref) return;
+
+    if (which === "min"){
+      tempMinPref.style.zIndex = "4";
+      tempMaxPref.style.zIndex = "3";
+    } else {
+      tempMaxPref.style.zIndex = "4";
+      tempMinPref.style.zIndex = "3";
+    }
+  }
+
+
+
+  function syncPrefControls(){
+    if (tempMinPref) tempMinPref.value = String(state.prefs.tempMin);
+    if (tempMaxPref) tempMaxPref.value = String(state.prefs.tempMax);
+
+    if (rainPref) rainPref.value = String(state.prefs.rainTolerance);
+    if (windPref) windPref.value = String(state.prefs.windTolerance);
+
+    // NEW: set filled-track % for single sliders
+    setSliderPct(rainPref);
+    setSliderPct(windPref);
+
+    renderPrefLabels();
+    updateTempRangeFill();
+  }
+
+
+
+  function onPrefsChanged(){
+    renderPrefLabels();
+    savePrefs();
+
+    // Re-render decision/score instantly
+    if (state.forecast?.daily?.length){
+      renderSelectedDay();
+    }
+  }
+
+
   // Decision + score + reasons
   function decisionEngine(day){
     const precip = day.precipProb ?? 0;
     const wind   = day.windMax ?? 0;
     const uv     = day.uvMax ?? 0;
     const tmax   = day.tmax ?? 20;
-    const tmin   = day.tmin ?? 10;
+    // const tmin   = day.tmin ?? 10; // not used (we only judge max temp)
 
-    const rainBad = precip >= 70;
-    const rainMeh = precip >= 25 && precip < 70;
 
-    const windBad = wind >= 45;
-    const windMeh = wind >= 35 && wind < 45;
+    const th = computeThresholds();
 
-    const tempBad = (tmax >= 35) || (tmax <= 12) || (tmin <= 2);
-    const tempMeh = (!tempBad) && (tmax >= 31 || tmax <= 16 || tmin <= 6);
+    // Rain based on prefs
+    const rainBad = precip >= th.rainBadMin;
+    const rainMeh = precip >= th.rainYesMax && precip < th.rainBadMin;
+
+    // Wind based on prefs
+    const windBad = wind >= th.windBadMin;
+    const windMeh = wind >= th.windYesMax && wind < th.windBadMin;
+
+    // Temperature based on prefs (ONLY uses daily max temp)
+      const tempBad =
+        (tmax >= (th.comfortMax + 6)) ||       // "too hot"
+        (tmax <= (th.comfortMin - 6));         // "too cold"
+
+      const tempMeh = (!tempBad) && (
+        (tmax > th.comfortMax) ||
+        (tmax < th.comfortMin)
+      );
+
+
+
 
     const uvBad = (!state.isNight) && uv >= 11;
     const uvMeh = (!state.isNight) && uv >= 8 && uv < 11;
@@ -1191,21 +1650,29 @@
     else decision = "MAYBE";
     if (decision === "YES" && precip > 25) decision = "MAYBE";
 
+
     let score = 100;
-    if (precip >= 70) score -= 50;
-    else if (precip >= 35) score -= 25;
+
+    // Rain: penalties scale once you exceed your "YES max"
+    if (precip >= th.rainBadMin) score -= 50;
+    else if (precip >= th.rainYesMax) score -= 25;
     else score -= precip * 0.2;
 
-    if (wind >= 40) score -= 35;
-    else if (wind >= 25) score -= 18;
-    else if (wind > 15) score -= (wind - 15) * 0.6;
+    // Wind: penalties scale once you exceed your "YES max"
+    if (wind >= th.windBadMin) score -= 35;
+    else if (wind >= th.windYesMax) score -= 18;
+    else if (wind > Math.max(10, th.windYesMax - 10)) score -= (wind - Math.max(10, th.windYesMax - 10)) * 0.6;
+
 
     if (tmax >= 35) score -= 35;
     else if (tmax >= 31) score -= 15;
+
     if (tmax <= 12) score -= 28;
     else if (tmax <= 16) score -= 10;
-    if (tmin <= 2) score -= 12;
-    else if (tmin <= 6) score -= 6;
+
+    // NOTE: no penalties from overnight low (tmin)
+
+
 
     if (!state.isNight){
       if (uv >= 11) score -= 30;
@@ -1225,8 +1692,9 @@
     else if (windMeh) add(`Breezy winds (${fmtWind(wind)}).`);
 
 
-    if (tempBad) add(`Temps look uncomfortable (High ${fmtTemp(tmax)}, Low ${fmtTemp(tmin)}).`);
-    else if (tempMeh) add(`Temps are a bit meh (High ${fmtTemp(tmax)}, Low ${fmtTemp(tmin)}).`);
+    if (tempBad) add(`Max temp looks uncomfortable (High ${fmtTemp(tmax)}).`);
+    else if (tempMeh) add(`Max temp is a bit meh (High ${fmtTemp(tmax)}).`);
+
 
 
     if (!state.isNight){
@@ -1345,29 +1813,6 @@
     };
   }
 
-  function funSurvivalTip(day){
-    const rain = day.precipProb ?? 0;
-    const wind = day.windMax ?? 0;
-    const uv = day.uvMax ?? 0;
-    const tmax = day.tmax ?? 20;
-
-    const tips = [];
-
-    if (rain >= 50) tips.push("If you go out, accept you’re basically a wet podcast host.");
-    if (wind >= 35) tips.push("Secure loose objects. The wind is in its villain arc.");
-    if (uv >= 9 && !state.isNight) tips.push("SPF is not optional — the sun is disrespectful today.");
-    if (tmax >= 33) tips.push("Carry water like it’s a personality trait.");
-
-    if (!tips.length){
-      tips.push(pickByDay([
-        "Touch grass responsibly. Do not start a new life in the park.",
-        "Smile at the sun. Or squint at it aggressively. Both count.",
-        "Take a walk and pretend you’re in a movie montage.",
-        "Go outside for five minutes. If it’s awful, you’re allowed to flee."
-      ], day.date));
-    }
-    return pickByDay(tips, day.date);
-  }
 
   function activityIdeas(day, decision){
     const rain = day.precipProb ?? 0;
@@ -1478,7 +1923,6 @@
     maleOutfitText.textContent = clothes.male;
     femaleOutfitText.textContent = clothes.female;
 
-    survivalTipText.textContent = funSurvivalTip(day);
 
     const acts = activityIdeas(day, decision);
     outsideIdeasText.innerHTML =
@@ -1495,34 +1939,22 @@
   }
 
   function applyTheme(){
-    if (state.themeMode === "light"){
-      document.body.setAttribute("data-theme","light");
-      return;
-    }
-    if (state.themeMode === "dark"){
-      document.body.setAttribute("data-theme","dark");
-      return;
-    }
-
-    const today = state.forecast?.daily?.[0];
-    const rainy = (today?.precipProb ?? 0) >= 55;
-    const windy = (today?.windMax ?? 0) >= 32;
-    const chooseDark = state.isNight || rainy || windy;
-    document.body.setAttribute("data-theme", chooseDark ? "dark" : "light");
+    document.body.setAttribute("data-theme", state.themeMode);
   }
 
-  function cycleTheme(){
-    if (state.themeMode === "auto") state.themeMode = "light";
-    else if (state.themeMode === "light") state.themeMode = "dark";
-    else state.themeMode = "auto";
 
-    themeBtn.textContent = state.themeMode === "auto" ? "🎨 Theme: Auto"
-      : state.themeMode === "light" ? "🎨 Theme: Light"
-      : "🎨 Theme: Dark";
+  function cycleTheme(){
+    state.themeMode = (state.themeMode === "dark") ? "light" : "dark";
+
+    themeBtn.textContent =
+      state.themeMode === "dark"
+        ? "🌙 Theme: Dark"
+        : "☀️ Theme: Light";
 
     localStorage.setItem("sigo_themeMode", state.themeMode);
     applyTheme();
   }
+
 
   function setTab(which){
     const isDash = which === "dashboard";
@@ -1821,9 +2253,8 @@
       const rain = d.precipProb == null ? "—" : `${Math.round(d.precipProb)}%`;
       const hi = fmtTemp(d.tmax);
       const isToday = idx === 0;
-      const nowTemp = (isToday && state.current?.temp != null) ? `${Math.round(state.current.temp)}°` : null;
-      const nowWind = (isToday && state.current?.wind != null) ? `${Math.round(state.current.wind)} km/h` : null;
-
+      
+      
       return `
         <div class="dayCard ${active}" data-idx="${idx}" role="button" tabindex="0" aria-label="Select ${escapeHtml(d.date)}">
           <div class="dayTop">
@@ -2160,11 +2591,15 @@
     localStorage.setItem("sigo_tempUnit", state.tempUnit);
     setUnitButtonLabel();
 
+    // ✅ Update the preference pills (temp range + wind tolerance)
+    renderPrefLabels();
+
     // Re-render everything that shows temps
     if (state.forecast?.daily?.length){
       renderSelectedDay();
     }
   }
+
 
 
   // ---------------------------
@@ -2189,13 +2624,19 @@
     state.extraSass = localStorage.getItem("sigo_extraSass") === "1";
     sassBtn.textContent = state.extraSass ? "✨ Extra Sass: On" : "✨ Extra Sass: Off";
 
-    state.themeMode = localStorage.getItem("sigo_themeMode") || "auto";
-    themeBtn.textContent = state.themeMode === "auto" ? "🎨 Theme: Auto"
-      : state.themeMode === "light" ? "🎨 Theme: Light"
-      : "🎨 Theme: Dark";
+    state.themeMode = localStorage.getItem("sigo_themeMode") || "dark";
+
+    themeBtn.textContent =
+      state.themeMode === "dark"
+        ? "🌙 Theme: Dark"
+        : "☀️ Theme: Light";
+
 
       state.tempUnit = localStorage.getItem("sigo_tempUnit") || "C";
       setUnitButtonLabel();
+    
+      loadPrefsFromStorage();
+      syncPrefControls();
 
   }
 
@@ -2236,6 +2677,125 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(runSuggest, 220);
   });
+
+
+  rainPref?.addEventListener("input", () => {
+    state.prefs.rainTolerance = Number(rainPref.value);
+    setSliderPct(rainPref); // NEW
+    onPrefsChanged();
+  });
+
+  windPref?.addEventListener("input", () => {
+    state.prefs.windTolerance = Number(windPref.value);
+    setSliderPct(windPref); // NEW
+    onPrefsChanged();
+  });
+
+
+
+
+ // ✅ Dual temp range drag handling (wrapper is the only interactive thing)
+  let activeTempThumb = null;      // "min" | "max"
+  let lastTempThumb = "max";       // ✅ remember last selected thumb
+  let draggingTemp = false;
+
+  function setTempFromEvent(e){
+    if (!tempMinPref || !tempMaxPref || !tempDualRange) return;
+
+    const val = valueFromPointerEvent(e, tempMinPref);
+
+    if (activeTempThumb === "min"){
+      const clamped = Math.min(val, Number(tempMaxPref.value));
+      tempMinPref.value = String(clamped);
+      tempMinPref.dispatchEvent(new Event("input", { bubbles: true }));
+    } else {
+      const clamped = Math.max(val, Number(tempMinPref.value));
+      tempMaxPref.value = String(clamped);
+      tempMaxPref.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  }
+
+  tempDualRange?.addEventListener("pointerdown", (e) => {
+    if (!tempMinPref || !tempMaxPref) return;
+
+    e.preventDefault();
+    tempDualRange.setPointerCapture?.(e.pointerId);
+
+    const clickVal = valueFromPointerEvent(e, tempMinPref);
+    const minVal = Number(tempMinPref.value);
+    const maxVal = Number(tempMaxPref.value);
+
+    const distToMin = Math.abs(clickVal - minVal);
+    const distToMax = Math.abs(clickVal - maxVal);
+
+    // ✅ If overlapping OR equal distance, move the last-used thumb
+    const overlapped = (minVal === maxVal);
+    const tie = (distToMin === distToMax);
+
+    if (overlapped || tie){
+      activeTempThumb = lastTempThumb;
+    } else {
+      activeTempThumb = (distToMin < distToMax) ? "min" : "max";
+    }
+
+    // remember for next time
+    lastTempThumb = activeTempThumb;
+
+    draggingTemp = true;
+    setTempFromEvent(e);
+  });
+
+  tempDualRange?.addEventListener("pointermove", (e) => {
+    if (!draggingTemp) return;
+    e.preventDefault();
+    setTempFromEvent(e);
+  });
+
+  tempDualRange?.addEventListener("pointerup", (e) => {
+    draggingTemp = false;
+    activeTempThumb = null;
+    tempDualRange.releasePointerCapture?.(e.pointerId);
+  });
+
+  tempDualRange?.addEventListener("pointercancel", (e) => {
+    draggingTemp = false;
+    activeTempThumb = null;
+    tempDualRange.releasePointerCapture?.(e.pointerId);
+  });
+
+
+
+  
+  // Keep your existing logic on input
+  tempMinPref?.addEventListener("input", () => {
+    state.prefs.tempMin = Number(tempMinPref.value);
+
+    if (state.prefs.tempMin > state.prefs.tempMax){
+      state.prefs.tempMax = state.prefs.tempMin;
+      tempMaxPref.value = String(state.prefs.tempMax);
+    }
+
+    updateTempRangeFill();
+    onPrefsChanged();
+  });
+
+  tempMaxPref?.addEventListener("input", () => {
+    state.prefs.tempMax = Number(tempMaxPref.value);
+
+    if (state.prefs.tempMax < state.prefs.tempMin){
+      state.prefs.tempMin = state.prefs.tempMax;
+      tempMinPref.value = String(state.prefs.tempMin);
+    }
+
+    updateTempRangeFill();
+    onPrefsChanged();
+  });
+
+
+
+
+
+
 
   placeInput.addEventListener("keydown", onInputKeyDown);
 
